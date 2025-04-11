@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,23 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Custom colors for Farmers E-Market
+				farm: {
+					"green-100": "#E7F3E2",
+					"green-200": "#C5E1B7",
+					"green-300": "#9CCF8D",
+					"green-400": "#73BE63",
+					"green-500": "#4A9C38",
+					"green-600": "#3B7D2D",
+					"green-700": "#2C5F21",
+					"brown-100": "#F5EFE7",
+					"brown-200": "#E6D5BA",
+					"brown-300": "#D1B78D",
+					"brown-400": "#BC9A60",
+					"brown-500": "#A67C37",
+					"brown-600": "#85642C",
+					"brown-700": "#644B22",
 				}
 			},
 			borderRadius: {
