@@ -9,7 +9,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import ProductCard from "@/components/market/ProductCard";
-import ProductFilters, { ProductFilters } from "@/components/market/ProductFilters";
+import ProductFiltersComponent, { ProductFilters as ProductFiltersType } from "@/components/market/ProductFilters";
 import { Product } from "@/types";
 import { products } from "@/data/mockData";
 import { ListFilter, Grid3X3, AlignJustify } from "lucide-react";
@@ -20,7 +20,7 @@ const MarketPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [gridView, setGridView] = useState<"grid" | "list">("grid");
   
-  const handleApplyFilters = (filters: ProductFilters) => {
+  const handleApplyFilters = (filters: ProductFiltersType) => {
     let filtered = [...products];
     
     // Apply search filter
@@ -113,7 +113,7 @@ const MarketPage = () => {
         
         {/* Filters */}
         <div className={`${showFilters ? 'block' : 'hidden'} lg:block lg:col-span-1`}>
-          <ProductFilters 
+          <ProductFiltersComponent 
             onApplyFilters={handleApplyFilters}
             onResetFilters={handleResetFilters}
           />
