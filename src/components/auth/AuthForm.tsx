@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UserRole } from "@/types";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -18,6 +19,7 @@ interface AuthFormProps {
 const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -41,10 +43,10 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
       };
 
       toast({
-        title: mode === "login" ? "Login Successful" : "Registration Successful",
+        title: mode === "login" ? t('loginSuccess') : t('registrationSuccess'),
         description: mode === "login" 
-          ? "Welcome back to Farmers E-Market!" 
-          : "Your account has been created successfully.",
+          ? t('welcomeBackMessage') 
+          : t('accountCreatedMessage'),
       });
 
       onSuccess(userData);
@@ -56,12 +58,12 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl text-farm-green-700">
-          {mode === "login" ? "Login to Your Account" : "Create an Account"}
+          {mode === "login" ? t('loginToAccount') : t('createAccount')}
         </CardTitle>
         <CardDescription>
           {mode === "login"
-            ? "Enter your credentials to access your account"
-            : "Join Farmers E-Market to connect with local producers"}
+            ? t('enterCredentials')
+            : t('joinToConnect')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -69,11 +71,11 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
           {mode === "register" && (
             <div className="space-y-4 mb-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">{t('fullName')}</Label>
                 <Input
                   id="name"
                   type="text"
-                  placeholder="Enter your full name"
+                  placeholder={t('enterFullName')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -81,7 +83,7 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
               </div>
 
               <div className="space-y-2">
-                <Label>I am a</Label>
+                <Label>{t('iAmA')}</Label>
                 <RadioGroup 
                   value={userRole} 
                   onValueChange={(value) => setUserRole(value as UserRole)}
@@ -89,11 +91,11 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="farmer" id="farmer" />
-                    <Label htmlFor="farmer" className="cursor-pointer">Farmer</Label>
+                    <Label htmlFor="farmer" className="cursor-pointer">{t('farmer')}</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="buyer" id="buyer" />
-                    <Label htmlFor="buyer" className="cursor-pointer">Buyer</Label>
+                    <Label htmlFor="buyer" className="cursor-pointer">{t('buyer')}</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -102,11 +104,11 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('email')}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="Enter your email"
+                placeholder={t('enterEmail')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -115,7 +117,7 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('password')}</Label>
                 {mode === "login" && (
                   <a 
                     href="#" 
@@ -123,19 +125,19 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
                     onClick={(e) => {
                       e.preventDefault();
                       toast({
-                        title: "Password Reset",
-                        description: "Password reset functionality would be implemented here.",
+                        title: t('passwordReset'),
+                        description: t('passwordResetMessage'),
                       });
                     }}
                   >
-                    Forgot password?
+                    {t('forgotPassword')}
                   </a>
                 )}
               </div>
               <Input
                 id="password"
                 type="password"
-                placeholder={mode === "login" ? "Enter your password" : "Create a password"}
+                placeholder={mode === "login" ? t('enterPassword') : t('createPassword')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -149,20 +151,20 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
               disabled={isSubmitting}
             >
               {isSubmitting
-                ? mode === "login" ? "Logging in..." : "Creating account..."
-                : mode === "login" ? "Login" : "Create Account"}
+                ? mode === "login" ? t('loggingIn') : t('creatingAccount')
+                : mode === "login" ? t('login') : t('createYourAccount')}
             </Button>
           </div>
         </form>
       </CardContent>
       <CardFooter className="flex justify-center border-t pt-4">
         <p className="text-sm text-gray-600">
-          {mode === "login" ? "Don't have an account? " : "Already have an account? "}
+          {mode === "login" ? t('dontHaveAccount') : t('alreadyHaveAccount')} {" "}
           <a
             className="text-farm-green-600 hover:underline font-medium cursor-pointer"
             onClick={() => navigate(mode === "login" ? "/register" : "/login")}
           >
-            {mode === "login" ? "Register" : "Login"}
+            {mode === "login" ? t('register') : t('login')}
           </a>
         </p>
       </CardFooter>

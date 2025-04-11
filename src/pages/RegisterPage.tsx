@@ -1,6 +1,7 @@
 
 import AuthForm from "@/components/auth/AuthForm";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface RegisterPageProps {
   onRegister: (userData: any) => void;
@@ -8,6 +9,7 @@ interface RegisterPageProps {
 
 const RegisterPage = ({ onRegister }: RegisterPageProps) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleRegisterSuccess = (userData: any) => {
     onRegister(userData);
@@ -20,10 +22,10 @@ const RegisterPage = ({ onRegister }: RegisterPageProps) => {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-md mx-auto text-center mb-8">
         <h1 className="text-3xl font-bold text-farm-green-700 mb-2">
-          Join Farmers E-Market
+          {t('joinFarmersEMarket')}
         </h1>
         <p className="text-lg text-farm-green-600">
-          Create an account to connect with local farmers and buyers
+          {t('createAccount')}
         </p>
       </div>
 

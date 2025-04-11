@@ -12,6 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Menu, User, LogOut } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageSelector from "./LanguageSelector";
 
 interface NavbarProps {
   userRole: UserRole | null;
@@ -22,6 +24,7 @@ interface NavbarProps {
 const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm py-4">
@@ -32,7 +35,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
             className="font-bold text-xl text-farm-green-600 cursor-pointer"
             onClick={() => navigate("/")}
           >
-            Farmers E-Market
+            {t('appName')}
           </span>
         </div>
 
@@ -42,20 +45,16 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
             variant="ghost" 
             onClick={() => navigate("/")}
           >
-            Home
-          </Button>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("/market")}
-          >
-            Market
+            {t('home')}
           </Button>
           <Button 
             variant="ghost" 
             onClick={() => navigate("/prices")}
           >
-            Live Prices
+            {t('prices')}
           </Button>
+          
+          <LanguageSelector />
           
           {userRole ? (
             <DropdownMenu>
@@ -66,26 +65,26 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>{t('profile')}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-                  Dashboard
+                  {t('dashboard')}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
-                  Profile
+                  {t('profile')}
                 </DropdownMenuItem>
                 {userRole === "farmer" && (
                   <DropdownMenuItem onClick={() => navigate("/products")}>
-                    My Products
+                    {t('myProducts')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={() => navigate("/orders")}>
-                  My Orders
+                  {t('myOrders')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={onLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Logout
+                  {t('logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -95,13 +94,13 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                 variant="outline" 
                 onClick={() => navigate("/login")}
               >
-                Login
+                {t('login')}
               </Button>
               <Button 
                 variant="default" 
                 onClick={() => navigate("/register")}
               >
-                Register
+                {t('register')}
               </Button>
             </div>
           )}
@@ -129,16 +128,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Home
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => {
-                navigate("/market");
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              Market
+              {t('home')}
             </Button>
             <Button 
               variant="ghost" 
@@ -147,8 +137,13 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                 setIsMobileMenuOpen(false);
               }}
             >
-              Live Prices
+              {t('prices')}
             </Button>
+            
+            <div className="flex items-center py-2">
+              <span className="mr-2">{t('language')}:</span>
+              <LanguageSelector />
+            </div>
             
             {userRole ? (
               <>
@@ -159,7 +154,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Dashboard
+                  {t('dashboard')}
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -168,7 +163,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Profile
+                  {t('profile')}
                 </Button>
                 {userRole === "farmer" && (
                   <Button 
@@ -178,7 +173,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                       setIsMobileMenuOpen(false);
                     }}
                   >
-                    My Products
+                    {t('myProducts')}
                   </Button>
                 )}
                 <Button 
@@ -188,7 +183,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  My Orders
+                  {t('myOrders')}
                 </Button>
                 <Button 
                   variant="ghost" 
@@ -198,7 +193,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Logout
+                  {t('logout')}
                 </Button>
               </>
             ) : (
@@ -210,7 +205,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Login
+                  {t('login')}
                 </Button>
                 <Button 
                   variant="default" 
@@ -219,7 +214,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Register
+                  {t('register')}
                 </Button>
               </div>
             )}
