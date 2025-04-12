@@ -51,6 +51,9 @@ interface TranslationStrings {
   language: string;
   invalidCredentials: string;
   emailAlreadyExists: string;
+  emailNotRegistered: string;
+  incorrectPassword: string;
+  createAccountNow: string;
 }
 
 const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
@@ -114,6 +117,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       language: 'Language',
       invalidCredentials: "Invalid email or password",
       emailAlreadyExists: "An account with this email already exists",
+      emailNotRegistered: "Email address is not registered",
+      incorrectPassword: "Incorrect password",
+      createAccountNow: "Create an account now",
     },
     ta: {
       appName: 'விவசாயிகள் இ-சந்தை',
@@ -158,6 +164,9 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
       language: 'மொழி',
       invalidCredentials: "தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்",
       emailAlreadyExists: "இந்த மின்னஞ்சலுடன் ஒரு கணக்கு ஏற்கனவே உள்ளது",
+      emailNotRegistered: "மின்னஞ்சல் முகவரி பதிவு செய்யப்படவில்லை",
+      incorrectPassword: "தவறான கடவுச்சொல்",
+      createAccountNow: "இப்போது ஒரு கணக்கை உருவாக்கவும்",
     }
   };
 
