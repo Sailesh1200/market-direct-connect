@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UserRole } from "@/types";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Lock, AlertCircle } from "lucide-react";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -70,8 +71,14 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
       const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
       const user = existingUsers.find((user: any) => user.email === email);
       
-      if (!user || user.password !== password) {
-        setError(t('invalidCredentials'));
+      if (!user) {
+        setError(t('emailNotRegistered'));
+        setIsSubmitting(false);
+        return;
+      }
+      
+      if (user.password !== password) {
+        setError(t('incorrectPassword'));
         setIsSubmitting(false);
         return;
       }
@@ -104,9 +111,22 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
       <CardContent>
         <form onSubmit={handleSubmit}>
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
-              {error}
-            </div>
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              <AlertDescription>
+                {error}
+                {error === t('emailNotRegistered') && (
+                  <span className="block mt-1">
+                    <a 
+                      onClick={() => navigate('/register')}
+                      className="text-blue-600 underline cursor-pointer"
+                    >
+                      {t('createAccountNow')}
+                    </a>
+                  </span>
+                )}
+              </AlertDescription>
+            </Alert>
           )}
 
           {mode === "register" && (
