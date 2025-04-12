@@ -4,6 +4,7 @@ import AuthForm from "@/components/auth/AuthForm";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { User } from "@/types";
+import { useToast } from "@/hooks/use-toast";
 
 interface RegisterPageProps {
   onRegister: (userData: User) => void;
@@ -12,6 +13,7 @@ interface RegisterPageProps {
 const RegisterPage = ({ onRegister }: RegisterPageProps) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { toast } = useToast();
 
   // Check if user is already logged in (stored in localStorage)
   useEffect(() => {
@@ -24,12 +26,15 @@ const RegisterPage = ({ onRegister }: RegisterPageProps) => {
   }, [navigate, onRegister]);
 
   const handleRegisterSuccess = (userData: User) => {
-    // Store the user in localStorage for persistent login
-    localStorage.setItem("currentUser", JSON.stringify(userData));
-    onRegister(userData);
+    // Instead of storing user in localStorage and auto-login,
+    // just show a success message and redirect to login page
+    toast({
+      title: t('registrationSuccess'),
+      description: t('accountCreatedMessage'),
+    });
     
-    // Redirect to dashboard
-    navigate("/dashboard");
+    // Redirect to login page
+    navigate("/login");
   };
 
   return (

@@ -58,11 +58,6 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
       // Save to localStorage
       localStorage.setItem("users", JSON.stringify([...existingUsers, userData]));
 
-      toast({
-        title: t('registrationSuccess'),
-        description: t('accountCreatedMessage'),
-      });
-
       // Pass data to parent, excluding password
       const { password: _, ...safeUserData } = userData;
       onSuccess(safeUserData);
@@ -87,6 +82,15 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
         title: t('loginSuccess'),
         description: t('welcomeBackMessage'),
       });
+
+      // Set user data in localStorage for persistent login
+      localStorage.setItem("currentUser", JSON.stringify({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt
+      }));
 
       // Pass user data to parent, excluding password
       const { password: _, ...safeUserData } = user;
