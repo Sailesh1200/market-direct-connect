@@ -1,187 +1,183 @@
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
-import React, { createContext, useState, useContext, ReactNode } from 'react';
-
-// Available languages
 export type Language = 'en' | 'ta';
 
-// Translation dictionary type
-export type TranslationDict = {
-  [key: string]: {
-    en: string;
-    ta: string;
-  };
-};
-
-// Initial translations (we'll add more as needed)
-export const translations: TranslationDict = {
-  // Common
-  appName: {
-    en: 'Farmers E-Market',
-    ta: 'விவசாயிகள் மின்-சந்தை'
-  },
-  home: {
-    en: 'Home',
-    ta: 'முகப்பு'
-  },
-  prices: {
-    en: 'Live Prices',
-    ta: 'நேரலை விலைகள்'
-  },
-  login: {
-    en: 'Login',
-    ta: 'உள்நுழைக'
-  },
-  register: {
-    en: 'Register',
-    ta: 'பதிவு செய்க'
-  },
-  logout: {
-    en: 'Logout',
-    ta: 'வெளியேறு'
-  },
-  dashboard: {
-    en: 'Dashboard',
-    ta: 'கட்டுப்பாட்டு பலகை'
-  },
-  profile: {
-    en: 'Profile',
-    ta: 'சுயவிவரம்'
-  },
-  myOrders: {
-    en: 'My Orders',
-    ta: 'எனது ஆர்டர்கள்'
-  },
-  myProducts: {
-    en: 'My Products',
-    ta: 'எனது பொருட்கள்'
-  },
-  
-  // Auth
-  welcomeBack: {
-    en: 'Welcome Back',
-    ta: 'மீண்டும் வரவேற்கிறோம்'
-  },
-  loginToAccess: {
-    en: 'Login to access your Farmers E-Market account',
-    ta: 'உங்கள் விவசாயிகள் மின்-சந்தை கணக்கை அணுக உள்நுழையவும்'
-  },
-  joinFarmersEMarket: {
-    en: 'Join Farmers E-Market',
-    ta: 'விவசாயிகள் மின்-சந்தையில் இணையுங்கள்'
-  },
-  createAccount: {
-    en: 'Create an account to connect with local farmers and buyers',
-    ta: 'உள்ளூர் விவசாயிகள் மற்றும் வாங்குபவர்களுடன் இணைவதற்கு ஒரு கணக்கை உருவாக்கவும்'
-  },
-  email: {
-    en: 'Email',
-    ta: 'மின்னஞ்சல்'
-  },
-  password: {
-    en: 'Password',
-    ta: 'கடவுச்சொல்'
-  },
-  forgotPassword: {
-    en: 'Forgot password?',
-    ta: 'கடவுச்சொல் மறந்துவிட்டதா?'
-  },
-  dontHaveAccount: {
-    en: "Don't have an account?",
-    ta: 'கணக்கு இல்லையா?'
-  },
-  alreadyHaveAccount: {
-    en: 'Already have an account?',
-    ta: 'ஏற்கனவே கணக்கு உள்ளதா?'
-  },
-  fullName: {
-    en: 'Full Name',
-    ta: 'முழு பெயர்'
-  },
-  iAmA: {
-    en: 'I am a',
-    ta: 'நான் ஒரு'
-  },
-  farmer: {
-    en: 'Farmer',
-    ta: 'விவசாயி'
-  },
-  buyer: {
-    en: 'Buyer',
-    ta: 'வாங்குபவர்'
-  },
-  createYourAccount: {
-    en: 'Create Account',
-    ta: 'கணக்கை உருவாக்கு'
-  },
-  loggingIn: {
-    en: 'Logging in...',
-    ta: 'உள்நுழைகிறது...'
-  },
-  creatingAccount: {
-    en: 'Creating account...',
-    ta: 'கணக்கை உருவாக்குகிறது...'
-  },
-  
-  // Prices Page
-  livePrices: {
-    en: 'Live Market Prices',
-    ta: 'நேரலை சந்தை விலைகள்'
-  },
-  latestPrices: {
-    en: 'Latest prices from agricultural markets',
-    ta: 'விவசாய சந்தைகளில் இருந்து சமீபத்திய விலைகள்'
-  },
-  pricePerUnit: {
-    en: 'Price Per',
-    ta: 'விலை (ஒன்றுக்கு)'
-  },
-  priceChange: {
-    en: 'Change',
-    ta: 'மாற்றம்'
-  },
-  lastUpdated: {
-    en: 'Last Updated',
-    ta: 'கடைசியாக புதுப்பிக்கப்பட்டது'
-  },
-};
-
-// Create the context type
-interface LanguageContextType {
+interface LanguageContextProps {
   language: Language;
-  setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  setLanguage: (language: Language) => void;
+  t: (key: keyof TranslationStrings) => string;
 }
 
-// Create the context with default values
-const LanguageContext = createContext<LanguageContextType>({
-  language: 'en',
-  setLanguage: () => {},
-  t: () => '',
-});
+interface TranslationStrings {
+  appName: string;
+  home: string;
+  prices: string;
+  login: string;
+  register: string;
+  logout: string;
+  dashboard: string;
+  profile: string;
+  myProducts: string;
+  myOrders: string;
+  welcomeBack: string;
+  loginToAccess: string;
+  loginToAccount: string;
+  enterCredentials: string;
+  email: string;
+  enterEmail: string;
+  password: string;
+  enterPassword: string;
+  forgotPassword: string;
+  passwordReset: string;
+  passwordResetMessage: string;
+  dontHaveAccount: string;
+  alreadyHaveAccount: string;
+  loggingIn: string;
+  loginSuccess: string;
+  welcomeBackMessage: string;
+  joinFarmersEMarket: string;
+  createAccount: string;
+  joinToConnect: string;
+  fullName: string;
+  enterFullName: string;
+  iAmA: string;
+  farmer: string;
+  buyer: string;
+  createPassword: string;
+  creatingAccount: string;
+  createYourAccount: string;
+  registrationSuccess: string;
+  accountCreatedMessage: string;
+  language: string;
+  invalidCredentials: string;
+  emailAlreadyExists: string;
+}
 
-// Create a provider component
-export const LanguageProvider: React.FC<{children: ReactNode}> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
-  // Translation function
-  const t = (key: string): string => {
-    if (translations[key] && translations[key][language]) {
-      return translations[key][language];
+export const useLanguage = (): LanguageContextProps => {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useLanguage must be used within a LanguageProvider");
+  }
+  return context;
+};
+
+interface LanguageProviderProps {
+  children: React.ReactNode;
+}
+
+export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
+  const [language, setLanguage] = useState<Language>((localStorage.getItem('language') as Language) || 'en');
+
+  const translations: Record<Language, TranslationStrings> = {
+    en: {
+      appName: 'Farmers E-Market',
+      home: 'Home',
+      prices: 'Prices',
+      login: 'Login',
+      register: 'Register',
+      logout: 'Logout',
+      dashboard: 'Dashboard',
+      profile: 'Profile',
+      myProducts: 'My Products',
+      myOrders: 'My Orders',
+      welcomeBack: 'Welcome Back!',
+      loginToAccess: 'Login to access your account',
+      loginToAccount: 'Login to your Account',
+      enterCredentials: 'Enter your credentials below',
+      email: 'Email',
+      enterEmail: 'Enter your email',
+      password: 'Password',
+      enterPassword: 'Enter your password',
+      forgotPassword: 'Forgot password?',
+      passwordReset: 'Password Reset',
+      passwordResetMessage: 'A password reset link has been sent to your email address.',
+      dontHaveAccount: "Don't have an account?",
+      alreadyHaveAccount: "Already have an account?",
+      loggingIn: 'Logging In...',
+      loginSuccess: 'Login Successful!',
+      welcomeBackMessage: 'Welcome back to Farmers E-Market!',
+      joinFarmersEMarket: 'Join Farmers E-Market!',
+      createAccount: 'Create an Account',
+      joinToConnect: 'Join to connect with farmers and buyers',
+      fullName: 'Full Name',
+      enterFullName: 'Enter your full name',
+      iAmA: 'I am a',
+      farmer: 'Farmer',
+      buyer: 'Buyer',
+      createPassword: 'Create a password',
+      creatingAccount: 'Creating Account...',
+      createYourAccount: 'Create Your Account',
+      registrationSuccess: 'Registration Successful!',
+      accountCreatedMessage: 'Your account has been created successfully!',
+      language: 'Language',
+      invalidCredentials: "Invalid email or password",
+      emailAlreadyExists: "An account with this email already exists",
+    },
+    ta: {
+      appName: 'விவசாயிகள் இ-சந்தை',
+      home: 'வீடு',
+      prices: 'விலைகள்',
+      login: 'உள்நுழை',
+      register: 'பதிவு செய்',
+      logout: 'வெளியேறு',
+      dashboard: 'டாஷ்போர்டு',
+      profile: 'சுயவிவரம்',
+      myProducts: 'எனது பொருட்கள்',
+      myOrders: 'எனது ஆர்டர்கள்',
+      welcomeBack: 'மீண்டும் வருக!',
+      loginToAccess: 'உங்கள் கணக்கை அணுக உள்நுழைக',
+      loginToAccount: 'உங்கள் கணக்கில் உள்நுழைக',
+      enterCredentials: 'கீழே உங்கள் சான்றுகளை உள்ளிடவும்',
+      email: 'மின்னஞ்சல்',
+      enterEmail: 'உங்கள் மின்னஞ்சலை உள்ளிடவும்',
+      password: 'கடவுச்சொல்',
+      enterPassword: 'உங்கள் கடவுச்சொல்லை உள்ளிடவும்',
+      forgotPassword: 'கடவுச்சொல்லை மறந்தீர்களா?',
+      passwordReset: 'கடவுச்சொல் மீட்டமைப்பு',
+      passwordResetMessage: 'கடவுச்சொல் மீட்டமைப்பு இணைப்பு உங்கள் மின்னஞ்சல் முகவரிக்கு அனுப்பப்பட்டுள்ளது.',
+      dontHaveAccount: "கணக்கு இல்லையா?",
+      alreadyHaveAccount: "ஏற்கனவே கணக்கு உள்ளதா?",
+      loggingIn: 'உள்நுழைகிறது...',
+      loginSuccess: 'உள்நுழைவு வெற்றிகரம்!',
+      welcomeBackMessage: 'விவசாயிகள் இ-சந்தைக்கு மீண்டும் வருக!',
+      joinFarmersEMarket: 'விவசாயிகள் இ-சந்தையில் சேருங்கள்!',
+      createAccount: 'கணக்கை உருவாக்கு',
+      joinToConnect: 'விவசாயிகள் மற்றும் வாங்குபவர்களுடன் இணையுங்கள்',
+      fullName: 'முழு பெயர்',
+      enterFullName: 'உங்கள் முழு பெயரை உள்ளிடவும்',
+      iAmA: 'நான் ஒரு',
+      farmer: 'விவசாயி',
+      buyer: 'வாங்குபவர்',
+      createPassword: 'கடவுச்சொல்லை உருவாக்கு',
+      creatingAccount: 'கணக்கை உருவாக்குகிறது...',
+      createYourAccount: 'உங்கள் கணக்கை உருவாக்குங்கள்',
+      registrationSuccess: 'பதிவு வெற்றிகரம்!',
+      accountCreatedMessage: 'உங்கள் கணக்கு வெற்றிகரமாக உருவாக்கப்பட்டது!',
+      language: 'மொழி',
+      invalidCredentials: "தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்",
+      emailAlreadyExists: "இந்த மின்னஞ்சலுடன் ஒரு கணக்கு ஏற்கனவே உள்ளது",
     }
-    // Fallback to English if translation not found
-    if (translations[key] && translations[key]['en']) {
-      return translations[key]['en'];
-    }
-    // Return the key itself if no translation exists
-    return key;
+  };
+
+  const t = useCallback((key: keyof TranslationStrings) => {
+    return translations[language][key] || key;
+  }, [language]);
+
+  React.useEffect(() => {
+    localStorage.setItem('language', language);
+  }, [language]);
+
+  const value: LanguageContextProps = {
+    language,
+    setLanguage,
+    t,
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={value}>
       {children}
     </LanguageContext.Provider>
   );
 };
-
-// Custom hook to use the language context
-export const useLanguage = () => useContext(LanguageContext);

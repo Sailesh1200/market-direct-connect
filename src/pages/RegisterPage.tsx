@@ -1,17 +1,31 @@
 
+import { useEffect } from "react";
 import AuthForm from "@/components/auth/AuthForm";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { User } from "@/types";
 
 interface RegisterPageProps {
-  onRegister: (userData: any) => void;
+  onRegister: (userData: User) => void;
 }
 
 const RegisterPage = ({ onRegister }: RegisterPageProps) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
 
-  const handleRegisterSuccess = (userData: any) => {
+  // Check if user is already logged in (stored in localStorage)
+  useEffect(() => {
+    const currentUser = localStorage.getItem("currentUser");
+    if (currentUser) {
+      // User is already logged in, redirect to dashboard
+      onRegister(JSON.parse(currentUser));
+      navigate("/dashboard");
+    }
+  }, [navigate, onRegister]);
+
+  const handleRegisterSuccess = (userData: User) => {
+    // Store the user in localStorage for persistent login
+    localStorage.setItem("currentUser", JSON.stringify(userData));
     onRegister(userData);
     
     // Redirect to dashboard

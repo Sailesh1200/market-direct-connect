@@ -1,17 +1,31 @@
 
+import { useEffect } from "react";
 import AuthForm from "@/components/auth/AuthForm";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { User } from "@/types";
 
 interface LoginPageProps {
-  onLogin: (userData: any) => void;
+  onLogin: (userData: User) => void;
 }
 
 const LoginPage = ({ onLogin }: LoginPageProps) => {
   const navigate = useNavigate();
   const { t } = useLanguage();
 
-  const handleLoginSuccess = (userData: any) => {
+  // Check if user is already logged in (stored in localStorage)
+  useEffect(() => {
+    const currentUser = localStorage.getItem("currentUser");
+    if (currentUser) {
+      // User is already logged in, redirect to dashboard
+      onLogin(JSON.parse(currentUser));
+      navigate("/dashboard");
+    }
+  }, [navigate, onLogin]);
+
+  const handleLoginSuccess = (userData: User) => {
+    // Store the user in localStorage for persistent login
+    localStorage.setItem("currentUser", JSON.stringify(userData));
     onLogin(userData);
     
     // Redirect to dashboard

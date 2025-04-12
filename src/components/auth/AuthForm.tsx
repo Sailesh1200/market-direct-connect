@@ -6,10 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UserRole } from "@/types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
 
 interface AuthFormProps {
   mode: "login" | "register";
@@ -25,33 +25,68 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
   const [name, setName] = useState("");
   const [userRole, setUserRole] = useState<UserRole>("buyer");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
-    // This is a mock authentication function
-    // In a real app, you'd integrate with your auth provider
-    setTimeout(() => {
-      // Mock success
+    if (mode === "register") {
+      // Check if user already exists
+      const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+      const userExists = existingUsers.some((user: any) => user.email === email);
+      
+      if (userExists) {
+        setError(t('emailAlreadyExists'));
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Register new user
       const userData = {
-        id: "user-123",
+        id: `user-${Date.now()}`,
         name: name || email.split("@")[0],
         email,
+        password, // In a real app, this would be hashed
         role: userRole,
         createdAt: new Date().toISOString()
       };
 
+      // Save to localStorage
+      localStorage.setItem("users", JSON.stringify([...existingUsers, userData]));
+
       toast({
-        title: mode === "login" ? t('loginSuccess') : t('registrationSuccess'),
-        description: mode === "login" 
-          ? t('welcomeBackMessage') 
-          : t('accountCreatedMessage'),
+        title: t('registrationSuccess'),
+        description: t('accountCreatedMessage'),
       });
 
-      onSuccess(userData);
-      setIsSubmitting(false);
-    }, 1000);
+      // Pass data to parent, excluding password
+      const { password: _, ...safeUserData } = userData;
+      onSuccess(safeUserData);
+    } else {
+      // Login logic
+      const existingUsers = JSON.parse(localStorage.getItem("users") || "[]");
+      const user = existingUsers.find((user: any) => user.email === email);
+      
+      if (!user || user.password !== password) {
+        setError(t('invalidCredentials'));
+        setIsSubmitting(false);
+        return;
+      }
+
+      toast({
+        title: t('loginSuccess'),
+        description: t('welcomeBackMessage'),
+      });
+
+      // Pass user data to parent, excluding password
+      const { password: _, ...safeUserData } = user;
+      onSuccess(safeUserData);
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -68,10 +103,19 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm">
+              {error}
+            </div>
+          )}
+
           {mode === "register" && (
             <div className="space-y-4 mb-4">
               <div className="space-y-2">
-                <Label htmlFor="name">{t('fullName')}</Label>
+                <Label htmlFor="name" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {t('fullName')}
+                </Label>
                 <Input
                   id="name"
                   type="text"
@@ -104,7 +148,10 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">{t('email')}</Label>
+              <Label htmlFor="email" className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                {t('email')}
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -117,7 +164,10 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">{t('password')}</Label>
+                <Label htmlFor="password" className="flex items-center gap-2">
+                  <Lock className="h-4 w-4" />
+                  {t('password')}
+                </Label>
                 {mode === "login" && (
                   <a 
                     href="#" 
@@ -134,15 +184,24 @@ const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
                   </a>
                 )}
               </div>
-              <Input
-                id="password"
-                type="password"
-                placeholder={mode === "login" ? t('enterPassword') : t('createPassword')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder={mode === "login" ? t('enterPassword') : t('createPassword')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
 
             <Button 
