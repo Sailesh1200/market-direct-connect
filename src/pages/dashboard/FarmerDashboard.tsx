@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { User } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ArrowRight, TrendingUp, TrendingDown, Minus, AreaChart as AreaChartIcon, Package, Clock, Truck, ChevronUp, ChevronDown, Plus } from "lucide-react";
+import { ArrowRight, TrendingUp, TrendingDown, Minus, AreaChart as AreaChartIcon, Package, Clock, Truck, ChevronUp, ChevronDown, Plus, IndianRupee } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { marketPrices, products, farmerStats, orders } from "@/data/mockData";
 import DashboardStat from "@/components/dashboard/DashboardStat";
@@ -51,31 +50,36 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+    <div className="container mx-auto px-4 py-8 bg-gradient-to-br from-farm-green-50 to-white">
+      <div className="mb-8 border-l-4 border-farm-green-600 pl-4">
         <h1 className="text-3xl font-bold text-farm-green-700 mb-2">
           {getDashboardTitle()}
         </h1>
         <p className="text-lg text-farm-green-600">
           {t('farmerDashboardDesc')}
         </p>
+        <div className="mt-2 bg-farm-green-100 text-farm-green-800 px-3 py-1 inline-block rounded-md text-sm font-medium">
+          Farmer Dashboard
+        </div>
       </div>
       
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashboardStat 
           title={t('totalSales')} 
-          value={`$${farmerStats.totalSales}`} 
+          value={`₹${farmerStats.totalSales}`} 
           icon={TrendingUp}
           description={t('lifetimeSalesValue')}
           trend="up"
           percentage={12.5}
+          iconColor="text-farm-green-600"
         />
         <DashboardStat 
           title={t('products')}
           value={farmerStats.totalProducts || 0}
           icon={Package}
           description={t('activeProductListings')}
+          iconColor="text-farm-green-600"
         />
         <DashboardStat 
           title={t('pendingOrders')}
@@ -84,6 +88,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
           description={t('ordersAwaitingAction')}
           trend={farmerStats.pendingOrders && farmerStats.pendingOrders > 5 ? "up" : "neutral"}
           percentage={farmerStats.pendingOrders && farmerStats.pendingOrders > 5 ? 8.2 : 0}
+          iconColor="text-farm-green-600"
         />
         <DashboardStat 
           title={t('completedOrders')}
@@ -92,14 +97,15 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
           description={t('successfullyFulfilled')}
           trend="up"
           percentage={4.3}
+          iconColor="text-farm-green-600"
         />
       </div>
 
       {/* Main Dashboard Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Sales Chart */}
-        <Card className="lg:col-span-2 border border-gray-200 shadow-sm bg-white">
-          <CardHeader className="pb-2">
+        <Card className="lg:col-span-2 border border-farm-green-200 shadow-sm bg-white">
+          <CardHeader className="pb-2 border-b border-farm-green-100">
             <CardTitle className="text-xl text-farm-green-700">
               {t('salesOverview')}
             </CardTitle>
@@ -126,7 +132,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
               </ResponsiveContainer>
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-green-100">
             <Button 
               variant="outline" 
               className="border-farm-green-600 text-farm-green-600 hover:bg-farm-green-50"
@@ -139,8 +145,8 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
         </Card>
         
         {/* Pending Orders */}
-        <Card className="border border-gray-200 shadow-sm bg-white">
-          <CardHeader className="pb-2">
+        <Card className="border border-farm-green-200 shadow-sm bg-white">
+          <CardHeader className="pb-2 border-b border-farm-green-100">
             <CardTitle className="text-xl text-farm-green-700">
               {pendingOrders.length > 0 ? t('pendingOrders') : t('recentActivity')}
             </CardTitle>
@@ -149,7 +155,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
             {pendingOrders.length > 0 ? (
               <div className="space-y-4">
                 {pendingOrders.slice(0, 4).map(order => (
-                  <div key={order.id} className="border-b pb-4 last:border-0">
+                  <div key={order.id} className="border-b border-farm-green-100 pb-4 last:border-0">
                     <div className="flex justify-between">
                       <div>
                         <p className="font-medium">Order #{order.id}</p>
@@ -157,7 +163,10 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
                           {order.buyerName}
                         </p>
                       </div>
-                      <p className="font-semibold text-farm-green-600">${order.total.toFixed(2)}</p>
+                      <p className="font-semibold text-farm-green-600 flex items-center">
+                        <IndianRupee className="h-3 w-3 mr-1" />
+                        {order.total.toFixed(2)}
+                      </p>
                     </div>
                     <p className="text-sm mt-1">
                       {order.items.length} item{order.items.length !== 1 ? "s" : ""}
@@ -172,7 +181,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
               <p className="text-gray-500 text-center py-8">{t('noPendingOrders')}</p>
             )}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-green-100">
             <Button 
               className="w-full bg-farm-green-600 hover:bg-farm-green-700"
               onClick={() => navigate("/orders")}
@@ -185,7 +194,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
       </div>
 
       {/* Market Price Monitoring */}
-      <Card className="mb-8 border border-gray-200 shadow-sm bg-white">
+      <Card className="mb-8 border border-farm-green-200 shadow-sm bg-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-xl text-farm-green-700">
             {t('marketPriceMonitoring')}
@@ -234,7 +243,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
       </Card>
 
       {/* Product Availability Management */}
-      <Card className="mb-8 border border-gray-200 shadow-sm bg-white">
+      <Card className="mb-8 border border-farm-green-200 shadow-sm bg-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-xl text-farm-green-700">
             {t('manageProductAvailability')}

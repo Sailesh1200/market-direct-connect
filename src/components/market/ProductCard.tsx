@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, IndianRupee } from "lucide-react";
 import { Product } from "@/types";
 
 interface ProductCardProps {
@@ -39,8 +39,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
           <h3 className="font-semibold text-farm-green-700 line-clamp-1">
             {product.name}
           </h3>
-          <span className="text-farm-green-600 font-bold">
-            ${product.price.toFixed(2)}/{product.unit}
+          <span className="text-farm-green-600 font-bold flex items-center">
+            <IndianRupee className="h-3 w-3 mr-1" />
+            {product.price.toFixed(2)}/{product.unit}
           </span>
         </div>
         <p 

@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { User } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ArrowRight, ShoppingBag, Truck, Search, Filter, User as UserIcon, Bell, ChevronUp, ChevronDown, MapPin, Star } from "lucide-react";
+import { ArrowRight, ShoppingBag, Truck, Search, Filter, User as UserIcon, Bell, ChevronUp, ChevronDown, MapPin, Star, IndianRupee } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { farmers, buyerStats, orders, marketPrices } from "@/data/mockData";
 import DashboardStat from "@/components/dashboard/DashboardStat";
@@ -96,25 +95,29 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-farm-green-700 mb-2">
+    <div className="container mx-auto px-4 py-8 bg-gradient-to-br from-farm-brown-50 to-white">
+      <div className="mb-8 border-l-4 border-farm-brown-600 pl-4">
+        <h1 className="text-3xl font-bold text-farm-brown-700 mb-2">
           {getDashboardTitle()}
         </h1>
-        <p className="text-lg text-farm-green-600">
+        <p className="text-lg text-farm-brown-600">
           {t('buyerDashboardDesc')}
         </p>
+        <div className="mt-2 bg-farm-brown-100 text-farm-brown-800 px-3 py-1 inline-block rounded-md text-sm font-medium">
+          Buyer Dashboard
+        </div>
       </div>
       
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashboardStat 
           title={t('totalPurchases')}
-          value={`$${buyerStats.totalPurchases}`} 
+          value={`₹${buyerStats.totalPurchases}`} 
           icon={ShoppingBag}
           description={t('lifetimeSpending')}
           trend="up"
           percentage={8.3}
+          iconColor="text-farm-brown-600"
         />
         <DashboardStat 
           title={t('ordersPlaced')}
@@ -123,12 +126,14 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
           description={t('totalOrdersHistory')}
           trend="up"
           percentage={5.7}
+          iconColor="text-farm-brown-600"
         />
         <DashboardStat 
           title={t('pendingOrders')}
           value={buyerStats.pendingOrders || 0}
           icon={Bell}
           description={t('ordersInProgress')}
+          iconColor="text-farm-brown-600"
         />
         <DashboardStat 
           title={t('completedOrders')}
@@ -137,15 +142,16 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
           description={t('successfullyReceived')}
           trend="up"
           percentage={12.1}
+          iconColor="text-farm-brown-600"
         />
       </div>
 
       {/* Main Dashboard Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Purchase History Chart */}
-        <Card className="lg:col-span-2 border border-gray-200 shadow-sm bg-white">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl text-farm-green-700">
+        <Card className="lg:col-span-2 border border-farm-brown-200 shadow-sm bg-white">
+          <CardHeader className="pb-2 border-b border-farm-brown-100">
+            <CardTitle className="text-xl text-farm-brown-700">
               {t('purchaseHistory')}
             </CardTitle>
           </CardHeader>
@@ -163,18 +169,18 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
                   <Area 
                     type="monotone" 
                     dataKey="value" 
-                    stroke="#4A9C38" 
-                    fill="#E7F3E2" 
+                    stroke="#A67C37" 
+                    fill="#F5EFE7" 
                     fillOpacity={0.8} 
                   />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-brown-100">
             <Button 
               variant="outline" 
-              className="border-farm-green-600 text-farm-green-600 hover:bg-farm-green-50"
+              className="border-farm-brown-600 text-farm-brown-600 hover:bg-farm-brown-50"
               onClick={() => navigate("/orders")}
             >
               {t('viewOrderHistory')}
@@ -184,15 +190,15 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
         </Card>
         
         {/* Notifications */}
-        <Card className="border border-gray-200 shadow-sm bg-white">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xl text-farm-green-700">
+        <Card className="border border-farm-brown-200 shadow-sm bg-white">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-farm-brown-100">
+            <CardTitle className="text-xl text-farm-brown-700">
               {t('recentUpdates')}
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
-              className="text-farm-green-600"
+              className="text-farm-brown-600"
               onClick={() => setExpandedNotifications(!expandedNotifications)}
             >
               {expandedNotifications ? (
@@ -206,10 +212,10 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
             {notifications.length > 0 ? (
               <div className="space-y-4">
                 {notifications.slice(0, expandedNotifications ? notifications.length : 3).map(notification => (
-                  <div key={notification.id} className="border-b pb-4 last:border-0">
+                  <div key={notification.id} className="border-b border-farm-brown-100 pb-4 last:border-0">
                     <div className="flex items-start">
-                      <div className="bg-farm-green-100 p-2 rounded-full mr-3">
-                        <Bell className="h-4 w-4 text-farm-green-600" />
+                      <div className="bg-farm-brown-100 p-2 rounded-full mr-3">
+                        <Bell className="h-4 w-4 text-farm-brown-600" />
                       </div>
                       <div>
                         <p className="font-medium">{notification.farmerName}</p>
@@ -228,9 +234,9 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
               <p className="text-gray-500 text-center py-8">{t('noRecentUpdates')}</p>
             )}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-brown-100">
             <Button 
-              className="w-full bg-farm-green-600 hover:bg-farm-green-700"
+              className="w-full bg-farm-brown-600 hover:bg-farm-brown-700"
               onClick={() => navigate("/notifications")}
             >
               {t('viewAllUpdates')}
@@ -241,9 +247,9 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
       </div>
 
       {/* Farmer Profiles */}
-      <Card className="mb-8 border border-gray-200 shadow-sm bg-white">
+      <Card className="mb-8 border border-farm-brown-200 shadow-sm bg-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle className="text-xl text-farm-green-700">
+          <CardTitle className="text-xl text-farm-brown-700">
             {t('connectedFarmers')}
           </CardTitle>
           <div className="flex gap-2">
@@ -252,7 +258,7 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
               <Input
                 type="text"
                 placeholder={t('searchFarmers')}
-                className="pl-9 h-9 w-64 border-gray-300 focus:border-farm-green-500"
+                className="pl-9 h-9 w-64 border-gray-300 focus:border-farm-brown-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -260,7 +266,7 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
             <Button
               variant="ghost"
               size="sm"
-              className="text-farm-green-600"
+              className="text-farm-brown-600"
               onClick={() => setExpandedFarmers(!expandedFarmers)}
             >
               {expandedFarmers ? (
@@ -361,9 +367,9 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
       </Card>
 
       {/* Market Prices */}
-      <Card className="mb-8 border border-gray-200 shadow-sm bg-white">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xl text-farm-green-700">
+      <Card className="mb-8 border border-farm-brown-200 shadow-sm bg-white">
+        <CardHeader className="pb-2 border-b border-farm-brown-100">
+          <CardTitle className="text-xl text-farm-brown-700">
             {t('trendingMarketPrices')}
           </CardTitle>
         </CardHeader>
@@ -374,9 +380,9 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
             ))}
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="border-t border-farm-brown-100">
           <Button 
-            className="w-full bg-farm-green-600 hover:bg-farm-green-700"
+            className="w-full bg-farm-brown-600 hover:bg-farm-brown-700"
             onClick={() => navigate("/prices")}
           >
             {t('viewAllMarketPrices')}
@@ -387,21 +393,21 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-all bg-white">
+        <Card className="border border-farm-brown-200 shadow-sm hover:shadow-md transition-all bg-white">
           <CardContent className="pt-6">
             <div className="flex justify-center mb-4">
-              <ShoppingBag className="h-8 w-8 text-farm-green-600" />
+              <ShoppingBag className="h-8 w-8 text-farm-brown-600" />
             </div>
-            <h3 className="text-lg font-semibold text-center text-farm-green-700 mb-2">
+            <h3 className="text-lg font-semibold text-center text-farm-brown-700 mb-2">
               {t('browseMarket')}
             </h3>
             <p className="text-sm text-center text-gray-600 mb-4">
               {t('discoverFreshProducts')}
             </p>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-brown-100">
             <Button 
-              className="w-full bg-farm-green-600 hover:bg-farm-green-700"
+              className="w-full bg-farm-brown-600 hover:bg-farm-brown-700"
               onClick={() => navigate("/market")}
             >
               {t('goToMarket')}
@@ -409,21 +415,21 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
           </CardFooter>
         </Card>
         
-        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-all bg-white">
+        <Card className="border border-farm-brown-200 shadow-sm hover:shadow-md transition-all bg-white">
           <CardContent className="pt-6">
             <div className="flex justify-center mb-4">
-              <Truck className="h-8 w-8 text-farm-green-600" />
+              <Truck className="h-8 w-8 text-farm-brown-600" />
             </div>
-            <h3 className="text-lg font-semibold text-center text-farm-green-700 mb-2">
+            <h3 className="text-lg font-semibold text-center text-farm-brown-700 mb-2">
               {t('trackOrders')}
             </h3>
             <p className="text-sm text-center text-gray-600 mb-4">
               {t('viewAndTrackOrders')}
             </p>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-brown-100">
             <Button 
-              className="w-full bg-farm-green-600 hover:bg-farm-green-700"
+              className="w-full bg-farm-brown-600 hover:bg-farm-brown-700"
               onClick={() => navigate("/orders")}
             >
               {t('goToOrders')}
@@ -431,21 +437,21 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
           </CardFooter>
         </Card>
 
-        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-all bg-white">
+        <Card className="border border-farm-brown-200 shadow-sm hover:shadow-md transition-all bg-white">
           <CardContent className="pt-6">
             <div className="flex justify-center mb-4">
-              <UserIcon className="h-8 w-8 text-farm-green-600" />
+              <UserIcon className="h-8 w-8 text-farm-brown-600" />
             </div>
-            <h3 className="text-lg font-semibold text-center text-farm-green-700 mb-2">
+            <h3 className="text-lg font-semibold text-center text-farm-brown-700 mb-2">
               {t('findFarmers')}
             </h3>
             <p className="text-sm text-center text-gray-600 mb-4">
               {t('connectWithLocalFarmers')}
             </p>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-brown-100">
             <Button 
-              className="w-full bg-farm-green-600 hover:bg-farm-green-700"
+              className="w-full bg-farm-brown-600 hover:bg-farm-brown-700"
               onClick={() => navigate("/farmers")}
             >
               {t('browseFarmers')}
@@ -453,21 +459,21 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
           </CardFooter>
         </Card>
 
-        <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-all bg-white">
+        <Card className="border border-farm-brown-200 shadow-sm hover:shadow-md transition-all bg-white">
           <CardContent className="pt-6">
             <div className="flex justify-center mb-4">
-              <Bell className="h-8 w-8 text-farm-green-600" />
+              <Bell className="h-8 w-8 text-farm-brown-600" />
             </div>
-            <h3 className="text-lg font-semibold text-center text-farm-green-700 mb-2">
+            <h3 className="text-lg font-semibold text-center text-farm-brown-700 mb-2">
               {t('notifications')}
             </h3>
             <p className="text-sm text-center text-gray-600 mb-4">
               {t('stayUpdatedWithChanges')}
             </p>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="border-t border-farm-brown-100">
             <Button 
-              className="w-full bg-farm-green-600 hover:bg-farm-green-700"
+              className="w-full bg-farm-brown-600 hover:bg-farm-brown-700"
               onClick={() => navigate("/notifications")}
             >
               {t('viewNotifications')}

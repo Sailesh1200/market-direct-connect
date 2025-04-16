@@ -1,7 +1,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { MarketPrice } from "@/types";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, IndianRupee } from "lucide-react";
 
 interface PriceCardProps {
   price: MarketPrice;
@@ -54,7 +54,10 @@ const PriceCard = ({ price }: PriceCardProps) => {
           <div>
             <p className="text-sm text-gray-600">Current Price</p>
             <p className="text-xl font-bold text-farm-green-700">
-              ${price.currentPrice.toFixed(2)}/{price.unit}
+              <span className="flex items-center">
+                <IndianRupee className="h-4 w-4 mr-1" />
+                {price.currentPrice.toFixed(2)}/{price.unit}
+              </span>
             </p>
           </div>
           <div className="text-right">

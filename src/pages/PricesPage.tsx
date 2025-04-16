@@ -11,7 +11,7 @@ import {
 import PriceCard from "@/components/market/PriceCard";
 import { marketPrices } from "@/data/mockData";
 import { MarketPrice, ProductCategory } from "@/types";
-import { Search, X } from "lucide-react";
+import { Search, X, IndianRupee } from "lucide-react";
 
 const PricesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
