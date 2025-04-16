@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, IndianRupee } from "lucide-react";
+import { ShoppingCart, IndianRupee, Leaf, Tag } from "lucide-react";
 import { Product } from "@/types";
 
 interface ProductCardProps {
@@ -29,10 +29,19 @@ const ProductCard = ({ product }: ProductCardProps) => {
           className="w-full h-full object-cover"
         />
         {product.organic && (
-          <div className="absolute top-2 left-2 bg-farm-green-600 text-white text-xs font-bold px-2 py-1 rounded">
+          <div className="absolute top-2 left-2 bg-farm-green-600 text-white text-xs font-bold px-2 py-1 rounded flex items-center">
+            <Leaf className="h-3 w-3 mr-1" />
             Organic
           </div>
         )}
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2">
+          <div className="flex justify-between items-center">
+            <span className="text-white text-xs font-medium flex items-center">
+              <Tag className="h-3 w-3 mr-1" />
+              {product.category}
+            </span>
+          </div>
+        </div>
       </div>
       <CardContent className="p-4">
         <div 
@@ -57,9 +66,16 @@ const ProductCard = ({ product }: ProductCardProps) => {
           className="flex justify-between items-center mt-2 text-sm cursor-pointer"
           onClick={() => navigate(`/product/${product.id}`)}
         >
-          <span className="text-farm-green-600">
-            By: {product.farmerName}
-          </span>
+          <div className="flex items-center">
+            <img 
+              src="/placeholder.svg"
+              alt="Farmer" 
+              className="w-5 h-5 rounded-full object-cover mr-1"
+            />
+            <span className="text-farm-green-600">
+              {product.farmerName}
+            </span>
+          </div>
           <span className="text-gray-500">
             {product.location}
           </span>
