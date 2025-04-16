@@ -8,7 +8,17 @@ const Hero = () => {
 
   return (
     <div className="relative bg-farm-green-100 py-16 md:py-24">
-      <div className="container mx-auto px-4">
+      {/* Background image with overlay */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07" 
+          alt="Farm landscape" 
+          className="w-full h-full object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-farm-green-600/10"></div>
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           <div className="text-center md:text-left">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-farm-green-700 mb-4">
@@ -40,9 +50,9 @@ const Hero = () => {
           </div>
           <div className="rounded-xl overflow-hidden shadow-xl border border-farm-green-200 transform translate-y-0 hover:-translate-y-2 transition-transform duration-300">
             <img 
-              src="/placeholder.svg"
+              src="https://images.unsplash.com/photo-1472396961693-142e6e269027" 
               alt="Fresh farm produce" 
-              className="w-full h-full object-cover" 
+              className="w-full h-full object-cover aspect-[4/3]" 
             />
           </div>
         </div>

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,6 +13,7 @@ import {
 import { Menu, User, LogOut } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "./LanguageSelector";
+import Logo from "./Logo";
 
 interface NavbarProps {
   userRole: UserRole | null;
@@ -29,15 +29,7 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="flex items-center">
-          <img src="/placeholder.svg" alt="Logo" className="h-8 w-8 mr-2" />
-          <span 
-            className="font-bold text-xl text-farm-green-600 cursor-pointer"
-            onClick={() => navigate("/")}
-          >
-            {t('appName')}
-          </span>
-        </div>
+        <Logo />
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-4">
