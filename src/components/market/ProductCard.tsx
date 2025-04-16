@@ -2,7 +2,7 @@
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, IndianRupee, Leaf, Tag } from "lucide-react";
+import { ShoppingCart, IndianRupee, Leaf, Tag, MapPin, Star, User } from "lucide-react";
 import { Product } from "@/types";
 
 interface ProductCardProps {
@@ -62,24 +62,34 @@ const ProductCard = ({ product }: ProductCardProps) => {
         >
           {product.description}
         </p>
-        <div 
-          className="flex justify-between items-center mt-2 text-sm cursor-pointer"
-          onClick={() => navigate(`/product/${product.id}`)}
-        >
-          <div className="flex items-center">
-            <img 
-              src="/placeholder.svg"
-              alt="Farmer" 
-              className="w-5 h-5 rounded-full object-cover mr-1"
-            />
-            <span className="text-farm-green-600">
-              {product.farmerName}
-            </span>
+        
+        {/* Enhanced Farmer Information */}
+        <div className="mt-3 p-2 bg-farm-green-50 rounded-md border border-farm-green-100">
+          <div className="flex items-center gap-2 mb-1 cursor-pointer" onClick={() => navigate(`/farmer/${product.farmerId}`)}>
+            <div className="h-8 w-8 rounded-full bg-farm-green-100 flex items-center justify-center overflow-hidden">
+              {product.images[1] ? (
+                <img src={product.images[1]} alt={product.farmerName} className="h-full w-full object-cover" />
+              ) : (
+                <User className="h-4 w-4 text-farm-green-600" />
+              )}
+            </div>
+            <div>
+              <span className="font-medium text-farm-green-700">
+                {product.farmerName}
+              </span>
+              <div className="flex items-center text-xs text-gray-500">
+                <MapPin className="h-3 w-3 mr-1" />
+                <span>{product.location}</span>
+              </div>
+            </div>
+            
+            <div className="ml-auto flex items-center">
+              <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500" />
+              <span className="text-xs ml-1 font-medium">4.8</span>
+            </div>
           </div>
-          <span className="text-gray-500">
-            {product.location}
-          </span>
         </div>
+        
         <div className="mt-4">
           <Button 
             className="w-full bg-farm-green-600 hover:bg-farm-green-700 flex items-center justify-center gap-2"

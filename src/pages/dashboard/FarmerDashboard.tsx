@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { User } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
@@ -5,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { ArrowRight, TrendingUp, TrendingDown, Minus, AreaChart as AreaChartIcon, Package, Clock, Truck, ChevronUp, ChevronDown, Plus, IndianRupee } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { marketPrices, products, farmerStats, orders } from "@/data/mockData";
+import { marketPrices, products, farmerStats, orders, buyers } from "@/data/mockData";
 import DashboardStat from "@/components/dashboard/DashboardStat";
 import { useNavigate } from "react-router-dom";
 import PriceCard from "@/components/market/PriceCard";
 import { Badge } from "@/components/ui/badge";
+import NearbyBuyers from "@/components/dashboard/NearbyBuyers";
 
 // Dummy sales data for chart
 const salesData = [
@@ -193,6 +195,9 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
         </Card>
       </div>
 
+      {/* Nearby Buyers */}
+      <NearbyBuyers buyers={buyers.slice(0, 6)} title="Nearby Buyers" />
+
       {/* Market Price Monitoring */}
       <Card className="mb-8 border border-farm-green-200 shadow-sm bg-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -280,7 +285,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
                         )}
                       </div>
                     </div>
-                    <p className="font-bold text-farm-green-700">${product.price}/{product.unit}</p>
+                    <p className="font-bold text-farm-green-700">₹{product.price}/{product.unit}</p>
                   </div>
                   
                   <div className="mt-3">

@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
   Select, 
@@ -12,9 +12,10 @@ import ProductCard from "@/components/market/ProductCard";
 import ProductFiltersComponent, { ProductFilters as ProductFiltersType } from "@/components/market/ProductFilters";
 import { Product } from "@/types";
 import { products } from "@/data/mockData";
-import { ListFilter, Grid3X3, AlignJustify } from "lucide-react";
+import { ListFilter, Grid3X3, AlignJustify, Map, Shield } from "lucide-react";
 
 const MarketPage = () => {
+  const navigate = useNavigate();
   const [displayedProducts, setDisplayedProducts] = useState<Product[]>(products);
   const [sortOption, setSortOption] = useState<string>("latest");
   const [showFilters, setShowFilters] = useState(false);
@@ -98,6 +99,26 @@ const MarketPage = () => {
         </p>
       </div>
       
+      {/* Featured Info Banner */}
+      <div className="mb-8 bg-gradient-to-r from-farm-green-50 to-farm-green-100 p-4 rounded-lg border border-farm-green-200">
+        <div className="flex items-center gap-3">
+          <div className="bg-white p-2 rounded-full">
+            <Shield className="h-6 w-6 text-farm-green-600" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-farm-green-700">Direct From Local Farmers</h3>
+            <p className="text-sm text-farm-green-600">All produce listed comes directly from verified farmers in your region</p>
+          </div>
+          <Button 
+            variant="outline" 
+            className="ml-auto border-farm-green-600 text-farm-green-600 hover:bg-farm-green-50"
+            onClick={() => window.open('/about-farmers', '_blank')}
+          >
+            Learn More
+          </Button>
+        </div>
+      </div>
+      
       <div className="lg:grid lg:grid-cols-4 lg:gap-8">
         {/* Mobile Filter Toggle */}
         <div className="lg:hidden mb-4">
@@ -155,6 +176,14 @@ const MarketPage = () => {
                   onClick={() => setGridView("list")}
                 >
                   <AlignJustify className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="px-2"
+                  onClick={() => navigate("/map-view")}
+                >
+                  <Map className="h-4 w-4" />
                 </Button>
               </div>
             </div>
