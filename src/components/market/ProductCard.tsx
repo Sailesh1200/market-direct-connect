@@ -11,6 +11,9 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const navigate = useNavigate();
+  
+  // Convert unit to kg if it's lb
+  const displayUnit = product.unit.toLowerCase() === "lb" ? "kg" : product.unit;
 
   return (
     <Card 
@@ -41,7 +44,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </h3>
           <span className="text-farm-green-600 font-bold flex items-center">
             <IndianRupee className="h-3 w-3 mr-1" />
-            {product.price.toFixed(2)}/{product.unit}
+            {product.price.toFixed(2)}/{displayUnit}
           </span>
         </div>
         <p 

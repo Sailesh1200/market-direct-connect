@@ -37,6 +37,9 @@ const PriceCard = ({ price }: PriceCardProps) => {
     return price.change < 0 ? "" : "±"; // No sign needed for negative, ± for zero
   };
 
+  // Convert unit to kg if it's lb
+  const displayUnit = price.unit.toLowerCase() === "lb" ? "kg" : price.unit;
+
   return (
     <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-4">
@@ -56,7 +59,7 @@ const PriceCard = ({ price }: PriceCardProps) => {
             <p className="text-xl font-bold text-farm-green-700">
               <span className="flex items-center">
                 <IndianRupee className="h-4 w-4 mr-1" />
-                {price.currentPrice.toFixed(2)}/{price.unit}
+                {price.currentPrice.toFixed(2)}/{displayUnit}
               </span>
             </p>
           </div>
