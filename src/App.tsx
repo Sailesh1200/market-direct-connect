@@ -8,15 +8,22 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomePage from "@/pages/HomePage";
+import MarketPage from "@/pages/MarketPage";
 import PricesPage from "@/pages/PricesPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
+import AdminDashboard from "@/pages/dashboard/AdminDashboard";
 import NotFound from "@/pages/NotFound";
 import { User, UserRole } from "@/types";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { products } from "@/data/mockData";
+import { initializeDataStore } from "@/services/DataSyncService";
 
 const queryClient = new QueryClient();
+
+// Initialize data store with mock products
+initializeDataStore(products);
 
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -31,6 +38,8 @@ const App = () => {
 
   const handleLogin = (userData: User) => {
     setUser(userData);
+    // Save to localStorage
+    localStorage.setItem("currentUser", JSON.stringify(userData));
   };
 
   const handleLogout = () => {
@@ -70,6 +79,7 @@ const App = () => {
               <main className="flex-grow">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/market" element={<MarketPage />} />
                   <Route path="/prices" element={<PricesPage />} />
                   <Route 
                     path="/login" 
@@ -91,7 +101,14 @@ const App = () => {
                       </ProtectedRoute>
                     } 
                   />
-                  {/* Add more protected routes here */}
+                  <Route 
+                    path="/admin" 
+                    element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminDashboard user={user as User} />
+                      </ProtectedRoute>
+                    } 
+                  />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
