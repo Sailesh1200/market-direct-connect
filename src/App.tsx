@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -77,7 +78,14 @@ const App = () => {
               <main className="flex-grow">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
-                  <Route path="/market" element={<MarketPage />} />
+                  <Route 
+                    path="/market" 
+                    element={
+                      <ProtectedRoute>
+                        <MarketPage />
+                      </ProtectedRoute>
+                    } 
+                  />
                   <Route 
                     path="/login" 
                     element={

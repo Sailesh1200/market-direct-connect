@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,12 +40,15 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
           >
             {t('home')}
           </Button>
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("/prices")}
-          >
-            {t('prices')}
-          </Button>
+          
+          {userRole && (
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate("/market")}
+            >
+              Market
+            </Button>
+          )}
           
           <LanguageSelector />
           
@@ -122,15 +126,18 @@ const Navbar = ({ userRole, userName, onLogout }: NavbarProps) => {
             >
               {t('home')}
             </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => {
-                navigate("/prices");
-                setIsMobileMenuOpen(false);
-              }}
-            >
-              {t('prices')}
-            </Button>
+            
+            {userRole && (
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  navigate("/market");
+                  setIsMobileMenuOpen(false);
+                }}
+              >
+                Market
+              </Button>
+            )}
             
             <div className="flex items-center py-2">
               <span className="mr-2">{t('language')}:</span>
