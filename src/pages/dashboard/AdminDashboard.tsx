@@ -92,28 +92,28 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
         <DashboardStat 
           title="Total Products"
           value={stats.totalProducts?.toString() || "0"}
-          icon={<ShoppingBasket size={32} className="text-farm-green-600" />}
+          icon={ShoppingBasket}
           trend="up"
           percentage={12}
         />
         <DashboardStat 
           title="Total Users"
           value={users.length.toString()}
-          icon={<Users size={32} className="text-farm-green-600" />}
+          icon={Users}
           trend="up"
           percentage={8}
         />
         <DashboardStat 
           title="Total Orders"
           value={stats.totalOrders?.toString() || "0"}
-          icon={<ClipboardList size={32} className="text-farm-green-600" />}
+          icon={ClipboardList}
           trend="up"
           percentage={5}
         />
         <DashboardStat 
           title="Total Revenue"
           value={`$${stats.revenue?.toFixed(2) || "0"}`}
-          icon={<BarChart3 size={32} className="text-farm-green-600" />}
+          icon={BarChart3}
           trend="up"
           percentage={15}
         />
