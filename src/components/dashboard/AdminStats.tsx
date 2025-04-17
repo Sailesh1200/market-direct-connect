@@ -5,7 +5,7 @@ import {
   BarChart3, 
   ClipboardList 
 } from "lucide-react";
-import { DashboardStats, User } from "@/types";
+import { DashboardStats } from "@/types";
 import DashboardStat from "@/components/dashboard/DashboardStat";
 
 interface AdminStatsProps {
@@ -22,6 +22,8 @@ const AdminStats = ({ stats, userCount }: AdminStatsProps) => {
         icon={ShoppingBasket}
         trend="up"
         percentage={12}
+        iconColor="text-farm-brown-600"
+        bgColor="hover:bg-farm-brown-100/50"
       />
       <DashboardStat 
         title="Total Users"
@@ -29,6 +31,8 @@ const AdminStats = ({ stats, userCount }: AdminStatsProps) => {
         icon={Users}
         trend="up"
         percentage={8}
+        iconColor="text-blue-600"
+        bgColor="hover:bg-blue-100/50"
       />
       <DashboardStat 
         title="Total Orders"
@@ -36,6 +40,8 @@ const AdminStats = ({ stats, userCount }: AdminStatsProps) => {
         icon={ClipboardList}
         trend="up"
         percentage={5}
+        iconColor="text-purple-600" 
+        bgColor="hover:bg-purple-100/50"
       />
       <DashboardStat 
         title="Total Revenue"
@@ -43,6 +49,9 @@ const AdminStats = ({ stats, userCount }: AdminStatsProps) => {
         icon={BarChart3}
         trend="up"
         percentage={15}
+        iconColor="text-farm-green-600"
+        bgColor="hover:bg-farm-green-100/50"
+        valueTextSize="xl"
       />
     </div>
   );
