@@ -1,3 +1,4 @@
+
 import { User, Product, Order, MarketPrice, DashboardStats } from '../types';
 
 // Mock users data
@@ -36,6 +37,9 @@ export const users: User[] = [
 
 // Export farmers (users with 'farmer' role)
 export const farmers = users.filter(user => user.role === 'farmer');
+
+// Export buyers (users with 'buyer' role)
+export const buyers = users.filter(user => user.role === 'buyer');
 
 // Mock products data
 export const products: Product[] = [
