@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -148,7 +147,7 @@ const UpdatedNavbar = ({ userRole, userName, onLogout }: NavbarProps) => {
                   {userRole === "admin" && (
                     <DropdownMenuItem onClick={() => navigate("/admin")}>
                       <ShieldCheck className="h-4 w-4 mr-2" />
-                      {t('adminPanel')}
+                      {"Admin Panel"}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
