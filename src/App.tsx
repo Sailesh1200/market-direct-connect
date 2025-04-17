@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -9,7 +8,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomePage from "@/pages/HomePage";
 import MarketPage from "@/pages/MarketPage";
-import PricesPage from "@/pages/PricesPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
@@ -80,7 +78,6 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/market" element={<MarketPage />} />
-                  <Route path="/prices" element={<PricesPage />} />
                   <Route 
                     path="/login" 
                     element={
