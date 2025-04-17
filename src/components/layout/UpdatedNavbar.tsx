@@ -21,7 +21,7 @@ import Logo from "@/components/layout/Logo";
 import LanguageSelector from "@/components/layout/LanguageSelector";
 import NotificationsMenu from "@/components/common/NotificationsMenu";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { UserRole } from "@/types";
 import { 
   Menu, 
@@ -44,7 +44,7 @@ const UpdatedNavbar = ({ userRole, userName, onLogout }: NavbarProps) => {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   const [isScrolled, setIsScrolled] = useState(false);
   
   // Check scroll position for navbar styling
@@ -61,7 +61,7 @@ const UpdatedNavbar = ({ userRole, userName, onLogout }: NavbarProps) => {
   const getNavItems = () => {
     const items = [
       { label: t('home'), path: "/", icon: <Home className="h-4 w-4 mr-2" /> },
-      { label: t('market'), path: "/market", icon: <Store className="h-4 w-4 mr-2" /> },
+      { label: "Market", path: "/market", icon: <Store className="h-4 w-4 mr-2" /> },
       { label: t('prices'), path: "/prices", icon: <BarChart2 className="h-4 w-4 mr-2" /> },
     ];
     
@@ -74,7 +74,7 @@ const UpdatedNavbar = ({ userRole, userName, onLogout }: NavbarProps) => {
       
       if (userRole === "admin") {
         items.push({ 
-          label: t('adminPanel'), 
+          label: "Admin Panel", 
           path: "/admin", 
           icon: <ShieldCheck className="h-4 w-4 mr-2" /> 
         });

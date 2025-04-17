@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User } from "@/types";
@@ -90,32 +89,32 @@ const AdminDashboard = ({ user }: AdminDashboardProps) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <DashboardStat 
-          title={t('totalProducts')}
+          title="Total Products"
           value={stats.totalProducts?.toString() || "0"}
           icon={<ShoppingBasket className="h-8 w-8 text-farm-green-600" />}
           trend="up"
-          percentage="12"
+          percentage={12}
         />
         <DashboardStat 
-          title={t('totalUsers')}
+          title="Total Users"
           value={users.length.toString()}
           icon={<Users className="h-8 w-8 text-farm-green-600" />}
           trend="up"
-          percentage="8"
+          percentage={8}
         />
         <DashboardStat 
-          title={t('totalOrders')}
+          title="Total Orders"
           value={stats.totalOrders?.toString() || "0"}
           icon={<ClipboardList className="h-8 w-8 text-farm-green-600" />}
           trend="up"
-          percentage="5"
+          percentage={5}
         />
         <DashboardStat 
-          title={t('totalRevenue')}
+          title="Total Revenue"
           value={`$${stats.revenue?.toFixed(2) || "0"}`}
           icon={<BarChart3 className="h-8 w-8 text-farm-green-600" />}
           trend="up"
-          percentage="15"
+          percentage={15}
         />
       </div>
 

@@ -92,10 +92,17 @@ const ProductForm = ({ farmerId, farmerName, onSuccess }: ProductFormProps) => {
   const onSubmit = (values: z.infer<typeof productFormSchema>) => {
     setIsSubmitting(true);
     
-    // Create new product object
+    // Create new product object with all required fields
     const newProduct = {
       id: Date.now().toString(),
-      ...values,
+      name: values.name,
+      description: values.description,
+      category: values.category,
+      price: values.price,
+      unit: values.unit,
+      quantity: values.quantity,
+      organic: values.organic,
+      location: values.location,
       images: ["/placeholder.svg"],
       farmerId,
       farmerName,
