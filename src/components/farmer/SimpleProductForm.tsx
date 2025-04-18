@@ -55,7 +55,7 @@ const SimpleProductForm = ({ farmerId, farmerName, onSuccess }: SimpleProductFor
       id: Date.now().toString(),
       name: values.name,
       description: `${values.quantity}kg of ${values.name}`,
-      category: "other",
+      category: "other" as const, // This fixes the TypeScript error by explicitly setting it as a ProductCategory
       price: 0,
       unit: "kg",
       quantity: values.quantity,

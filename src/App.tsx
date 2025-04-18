@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useNavigate } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +25,7 @@ initializeDataStore(products);
 
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
+  const navigate = useNavigate();
 
   // Check for logged in user on app start
   useEffect(() => {
