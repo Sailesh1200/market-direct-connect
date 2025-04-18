@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import PriceCard from "@/components/market/PriceCard";
 import { ShoppingCart } from "lucide-react";
+import ProductFeed from "@/components/buyer/ProductFeed";
 
 const purchaseData = [
   { name: "Jan", value: 150 },
@@ -151,6 +152,10 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
           percentage={12.1}
           iconColor="text-farm-brown-600"
         />
+      </div>
+      
+      <div className="mb-8">
+        <ProductFeed />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
