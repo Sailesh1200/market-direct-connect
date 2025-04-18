@@ -11,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import PriceCard from "@/components/market/PriceCard";
+import { ShoppingCart } from "lucide-react";
 
-// Dummy purchase data for chart
 const purchaseData = [
   { name: "Jan", value: 150 },
   { name: "Feb", value: 220 },
@@ -34,11 +34,9 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedNotifications, setExpandedNotifications] = useState(false);
 
-  // Filter orders for the current user
   const userOrders = orders.filter(order => order.buyerId === user.id);
   const pendingOrders = userOrders.filter(order => order.status === "pending" || order.status === "confirmed");
 
-  // Create some mock notifications
   const notifications = [
     { 
       id: "1",
@@ -63,12 +61,10 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
     }
   ];
 
-  // Filter farmers based on search query
   const filteredFarmers = farmers.filter(farmer => 
     farmer.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Define dashboard greeting based on time of day
   const getDashboardTitle = () => {
     const timeOfDay = new Date().getHours() < 12 
       ? "Morning" 
@@ -79,7 +75,6 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
     return `Good ${timeOfDay}, ${user.name}`;
   };
 
-  // Format time for notifications
   const formatTimeAgo = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -97,18 +92,30 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
   return (
     <div className="container mx-auto px-4 py-8 bg-gradient-to-br from-farm-brown-50 to-white">
       <div className="mb-8 border-l-4 border-farm-brown-600 pl-4">
-        <h1 className="text-3xl font-bold text-farm-brown-700 mb-2">
-          {getDashboardTitle()}
-        </h1>
-        <p className="text-lg text-farm-brown-600">
-          {t('buyerDashboardDesc')}
-        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-farm-brown-700 mb-2">
+              {getDashboardTitle()}
+            </h1>
+            <p className="text-lg text-farm-brown-600">
+              {t('buyerDashboardDesc')}
+            </p>
+          </div>
+          <div>
+            <Button 
+              className="bg-farm-brown-600 hover:bg-farm-brown-700"
+              onClick={() => navigate("/market")}
+            >
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              Place Order
+            </Button>
+          </div>
+        </div>
         <div className="mt-2 bg-farm-brown-100 text-farm-brown-800 px-3 py-1 inline-block rounded-md text-sm font-medium">
           Buyer Dashboard
         </div>
       </div>
-      
-      {/* Stats Grid */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashboardStat 
           title={t('totalPurchases')}
@@ -146,9 +153,7 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
         />
       </div>
 
-      {/* Main Dashboard Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Purchase History Chart */}
         <Card className="lg:col-span-2 border border-farm-brown-200 shadow-sm bg-white">
           <CardHeader className="pb-2 border-b border-farm-brown-100">
             <CardTitle className="text-xl text-farm-brown-700">
@@ -189,7 +194,6 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
           </CardFooter>
         </Card>
         
-        {/* Notifications */}
         <Card className="border border-farm-brown-200 shadow-sm bg-white">
           <CardHeader className="flex flex-row items-center justify-between pb-2 border-b border-farm-brown-100">
             <CardTitle className="text-xl text-farm-brown-700">
@@ -246,7 +250,6 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
         </Card>
       </div>
 
-      {/* Farmer Profiles */}
       <Card className="mb-8 border border-farm-brown-200 shadow-sm bg-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-xl text-farm-brown-700">
@@ -366,7 +369,6 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
         </CardFooter>
       </Card>
 
-      {/* Market Prices */}
       <Card className="mb-8 border border-farm-brown-200 shadow-sm bg-white">
         <CardHeader className="pb-2 border-b border-farm-brown-100">
           <CardTitle className="text-xl text-farm-brown-700">
@@ -391,7 +393,6 @@ const BuyerDashboard = ({ user }: BuyerDashboardProps) => {
         </CardFooter>
       </Card>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border border-farm-brown-200 shadow-sm hover:shadow-md transition-all bg-white">
           <CardContent className="pt-6">

@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { User } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { ArrowRight, TrendingUp, TrendingDown, Minus, AreaChart as AreaChartIcon, Package, Clock, Truck, ChevronUp, ChevronDown, Plus, IndianRupee } from "lucide-react";
+import { ArrowRight, TrendingUp, TrendingDown, Minus, AreaChart as AreaChartIcon, Package, Clock, Truck, ChevronUp, ChevronDown, Plus, IndianRupee, PackagePlus } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { marketPrices, products, farmerStats, orders, buyers } from "@/data/mockData";
 import DashboardStat from "@/components/dashboard/DashboardStat";
@@ -12,8 +11,8 @@ import { useNavigate } from "react-router-dom";
 import PriceCard from "@/components/market/PriceCard";
 import { Badge } from "@/components/ui/badge";
 import NearbyBuyers from "@/components/dashboard/NearbyBuyers";
+import AddProductSection from "@/components/farmer/AddProductSection";
 
-// Dummy sales data for chart
 const salesData = [
   { name: "Jan", value: 400 },
   { name: "Feb", value: 300 },
@@ -34,13 +33,11 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
   const [expandedPrices, setExpandedPrices] = useState(false);
   const [expandedAvailability, setExpandedAvailability] = useState(false);
 
-  // Get filtered products and orders for the current user
   const userProducts = products.filter(product => product.farmerId === user.id);
   const pendingOrders = orders.filter(order => 
     order.farmerId === user.id && order.status === "pending"
   );
 
-  // Define dashboard greeting based on time of day
   const getDashboardTitle = () => {
     const timeOfDay = new Date().getHours() < 12 
       ? "Morning" 
@@ -54,18 +51,30 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
   return (
     <div className="container mx-auto px-4 py-8 bg-gradient-to-br from-farm-green-50 to-white">
       <div className="mb-8 border-l-4 border-farm-green-600 pl-4">
-        <h1 className="text-3xl font-bold text-farm-green-700 mb-2">
-          {getDashboardTitle()}
-        </h1>
-        <p className="text-lg text-farm-green-600">
-          {t('farmerDashboardDesc')}
-        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-farm-green-700 mb-2">
+              {getDashboardTitle()}
+            </h1>
+            <p className="text-lg text-farm-green-600">
+              {t('farmerDashboardDesc')}
+            </p>
+          </div>
+          <div>
+            <Button 
+              className="bg-farm-green-600 hover:bg-farm-green-700"
+              onClick={() => navigate("/products/new")}
+            >
+              <PackagePlus className="mr-2 h-5 w-5" />
+              Add Product
+            </Button>
+          </div>
+        </div>
         <div className="mt-2 bg-farm-green-100 text-farm-green-800 px-3 py-1 inline-block rounded-md text-sm font-medium">
           Farmer Dashboard
         </div>
       </div>
-      
-      {/* Stats Grid */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashboardStat 
           title={t('totalSales')} 
@@ -103,9 +112,7 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
         />
       </div>
 
-      {/* Main Dashboard Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        {/* Sales Chart */}
         <Card className="lg:col-span-2 border border-farm-green-200 shadow-sm bg-white">
           <CardHeader className="pb-2 border-b border-farm-green-100">
             <CardTitle className="text-xl text-farm-green-700">
@@ -146,7 +153,6 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
           </CardFooter>
         </Card>
         
-        {/* Pending Orders */}
         <Card className="border border-farm-green-200 shadow-sm bg-white">
           <CardHeader className="pb-2 border-b border-farm-green-100">
             <CardTitle className="text-xl text-farm-green-700">
@@ -195,10 +201,8 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
         </Card>
       </div>
 
-      {/* Nearby Buyers */}
       <NearbyBuyers buyers={buyers.slice(0, 6)} title="Nearby Buyers" />
 
-      {/* Market Price Monitoring */}
       <Card className="mb-8 border border-farm-green-200 shadow-sm bg-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-xl text-farm-green-700">
@@ -247,7 +251,6 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
         </CardFooter>
       </Card>
 
-      {/* Product Availability Management */}
       <Card className="mb-8 border border-farm-green-200 shadow-sm bg-white">
         <CardHeader className="flex flex-row items-center justify-between pb-2">
           <CardTitle className="text-xl text-farm-green-700">
@@ -307,7 +310,6 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
               </Card>
             ))}
 
-            {/* Add New Product Card */}
             <Card className="border border-dashed border-gray-300 shadow-none bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => navigate("/products/new")}>
               <CardContent className="p-4 flex flex-col items-center justify-center h-full min-h-[200px]">
                 <Plus className="h-10 w-10 text-farm-green-600 mb-2" />
@@ -340,7 +342,6 @@ const FarmerDashboard = ({ user }: FarmerDashboardProps) => {
         </CardFooter>
       </Card>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border border-gray-200 shadow-sm hover:shadow-md transition-all bg-white">
           <CardContent className="pt-6">
