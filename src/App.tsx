@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -39,6 +38,14 @@ const App = () => {
     setUser(userData);
     // Save to localStorage
     localStorage.setItem("currentUser", JSON.stringify(userData));
+    // Redirect based on user role
+    if (userData.role === "farmer") {
+      navigate("/dashboard");
+    } else if (userData.role === "buyer") {
+      navigate("/market");
+    } else if (userData.role === "admin") {
+      navigate("/admin");
+    }
   };
 
   const handleLogout = () => {

@@ -38,14 +38,14 @@ const AddProductSection = ({ user }: AddProductSectionProps) => {
               Add New Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Add New Product</DialogTitle>
               <DialogDescription>
-                Fill out the form below to list your product on the marketplace.
+                Fill out the basic details to list your product.
               </DialogDescription>
             </DialogHeader>
-            <ProductForm 
+            <SimpleProductForm 
               farmerId={user.id} 
               farmerName={user.name}
               onSuccess={() => setIsDialogOpen(false)}
