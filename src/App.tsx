@@ -114,6 +114,14 @@ const App = () => {
                       </ProtectedRoute>
                     } 
                   />
+                  <Route 
+                    path="/products/new" 
+                    element={
+                      <ProtectedRoute>
+                        <AddProductPage user={user as User} />
+                      </ProtectedRoute>
+                    } 
+                  />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
