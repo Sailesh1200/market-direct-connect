@@ -1,9 +1,10 @@
-import { useState, useEffect, useNavigate } from "react";
+
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomePage from "@/pages/HomePage";
@@ -25,8 +26,7 @@ initializeDataStore(products);
 
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
-  const navigate = useNavigate();
-
+  
   // Check for logged in user on app start
   useEffect(() => {
     const storedUser = localStorage.getItem("currentUser");
@@ -39,14 +39,6 @@ const App = () => {
     setUser(userData);
     // Save to localStorage
     localStorage.setItem("currentUser", JSON.stringify(userData));
-    // Redirect based on user role
-    if (userData.role === "farmer") {
-      navigate("/dashboard");
-    } else if (userData.role === "buyer") {
-      navigate("/market");
-    } else if (userData.role === "admin") {
-      navigate("/admin");
-    }
   };
 
   const handleLogout = () => {

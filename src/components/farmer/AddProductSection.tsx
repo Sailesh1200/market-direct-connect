@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import ProductForm from "@/components/farmer/ProductForm";
+import SimpleProductForm from "@/components/farmer/SimpleProductForm";
 import { User } from "@/types";
 
 interface AddProductSectionProps {
