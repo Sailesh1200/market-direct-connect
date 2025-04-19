@@ -1,10 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HomePage from "@/pages/HomePage";
@@ -65,72 +65,72 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <LanguageProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <div className="min-h-screen flex flex-col">
-              <Navbar 
-                userRole={user?.role || null} 
-                userName={user?.name || null}
-                onLogout={handleLogout}
-              />
-              
-              <main className="flex-grow">
-                <Routes>
-                  <Route path="/" element={<HomePage />} />
-                  <Route 
-                    path="/market" 
-                    element={
-                      <ProtectedRoute>
-                        <MarketPage />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/login" 
-                    element={
-                      user ? <Navigate to="/dashboard" /> : <LoginPage onLogin={handleLogin} />
-                    } 
-                  />
-                  <Route 
-                    path="/register" 
-                    element={
-                      user ? <Navigate to="/dashboard" /> : <RegisterPage onRegister={handleLogin} />
-                    } 
-                  />
-                  <Route 
-                    path="/dashboard" 
-                    element={
-                      <ProtectedRoute>
-                        <DashboardPage user={user as User} />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/admin" 
-                    element={
-                      <ProtectedRoute requiredRole="admin">
-                        <AdminDashboard user={user as User} />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/products/new" 
-                    element={
-                      <ProtectedRoute>
-                        <AddProductPage user={user as User} />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
-              
-              <Footer />
-            </div>
-          </BrowserRouter>
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <div className="min-h-screen flex flex-col">
+                <Navbar 
+                  userRole={user?.role || null} 
+                  userName={user?.name || null}
+                  onLogout={handleLogout}
+                />
+                <main className="flex-grow">
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route 
+                      path="/market" 
+                      element={
+                        <ProtectedRoute>
+                          <MarketPage />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/login" 
+                      element={
+                        user ? <Navigate to="/dashboard" /> : <LoginPage onLogin={handleLogin} />
+                      } 
+                    />
+                    <Route 
+                      path="/register" 
+                      element={
+                        user ? <Navigate to="/dashboard" /> : <RegisterPage onRegister={handleLogin} />
+                      } 
+                    />
+                    <Route 
+                      path="/dashboard" 
+                      element={
+                        <ProtectedRoute>
+                          <DashboardPage user={user as User} />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/admin" 
+                      element={
+                        <ProtectedRoute requiredRole="admin">
+                          <AdminDashboard user={user as User} />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/products/new" 
+                      element={
+                        <ProtectedRoute>
+                          <AddProductPage user={user as User} />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+                <Footer />
+              </div>
+            </BrowserRouter>
+          </LanguageProvider>
+        </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );
