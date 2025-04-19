@@ -45,7 +45,7 @@ const NotificationsMenu = () => {
   // Get notification style based on type
   const getNotificationStyle = (type: Notification['type']) => {
     switch (type) {
-      case 'success':
+      case 'product_added':
         return 'bg-green-50 border-l-4 border-green-500';
       case 'warning':
         return 'bg-yellow-50 border-l-4 border-yellow-500';
@@ -99,7 +99,7 @@ const NotificationsMenu = () => {
                     </p>
                   </div>
                   <p className="text-xs text-gray-600 mt-1">
-                    {formatTimestamp(notification.timestamp)}
+                    {formatTimestamp(new Date(notification.created_at))}
                   </p>
                 </div>
               </DropdownMenuItem>

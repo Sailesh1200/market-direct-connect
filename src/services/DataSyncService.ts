@@ -1,109 +1,83 @@
 
-import { Product } from "@/types";
-import { create } from "zustand";
+import { create } from 'zustand';
+import { supabase } from '@/integrations/supabase/client';
+import { Product } from '@/types';
 
-// Define the store types
-interface DataStore {
-  products: Product[];
-  notifications: Notification[];
-  addProduct: (product: Product) => void;
-  updateProduct: (product: Product) => void;
-  deleteProduct: (productId: string) => void;
-  addNotification: (notification: Notification) => void;
-  clearNotifications: () => void;
-}
-
-// Define the notification type
 export interface Notification {
   id: string;
   message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  timestamp: Date;
+  type: string;
   read: boolean;
+  created_at: string;
 }
 
-// Create a store to handle data sync
+interface DataStore {
+  products: Product[];
+  notifications: Notification[];
+  setProducts: (products: Product[]) => void;
+  addProduct: (product: Product) => void;
+  addNotification: (notification: Notification) => void;
+  clearNotifications: () => void;
+  markNotificationAsRead: (id: string) => void;
+}
+
 export const useDataStore = create<DataStore>((set) => ({
   products: [],
   notifications: [],
-  
-  // Add a new product
-  addProduct: (product: Product) => {
-    set((state) => ({
-      products: [...state.products, product],
-      notifications: [
-        ...state.notifications,
-        {
-          id: Date.now().toString(),
-          message: `New product added: ${product.name}`,
-          type: 'success',
-          timestamp: new Date(),
-          read: false
-        }
-      ]
-    }));
-  },
-  
-  // Update an existing product
-  updateProduct: (product: Product) => {
-    set((state) => ({
-      products: state.products.map(p => 
-        p.id === product.id ? product : p
-      ),
-      notifications: [
-        ...state.notifications,
-        {
-          id: Date.now().toString(),
-          message: `Product updated: ${product.name}`,
-          type: 'info',
-          timestamp: new Date(),
-          read: false
-        }
-      ]
-    }));
-  },
-  
-  // Delete a product
-  deleteProduct: (productId: string) => {
-    set((state) => {
-      const productToDelete = state.products.find(p => p.id === productId);
-      return {
-        products: state.products.filter(p => p.id !== productId),
-        notifications: [
-          ...state.notifications,
-          {
-            id: Date.now().toString(),
-            message: `Product deleted: ${productToDelete?.name || productId}`,
-            type: 'warning',
-            timestamp: new Date(),
-            read: false
-          }
-        ]
-      };
-    });
-  },
-  
-  // Add a notification
-  addNotification: (notification: Notification) => {
-    set((state) => ({
-      notifications: [...state.notifications, notification]
-    }));
-  },
-  
-  // Clear all notifications
-  clearNotifications: () => {
-    set(() => ({
-      notifications: []
-    }));
-  }
+  setProducts: (products) => set({ products }),
+  addProduct: (product) => set((state) => ({ 
+    products: [product, ...state.products] 
+  })),
+  addNotification: (notification) => set((state) => ({
+    notifications: [notification, ...state.notifications]
+  })),
+  clearNotifications: () => set({ notifications: [] }),
+  markNotificationAsRead: (id) => set((state) => ({
+    notifications: state.notifications.map(n => 
+      n.id === id ? { ...n, read: true } : n
+    )
+  })),
 }));
 
-// Initialize the store with mock data
 export const initializeDataStore = (initialProducts: Product[]) => {
-  const { addProduct } = useDataStore.getState();
-  
-  // Add initial products to the store
-  initialProducts.forEach(product => {
-    addProduct(product);
-  });
+  const store = useDataStore.getState();
+  store.setProducts(initialProducts);
+
+  // Subscribe to product changes
+  const productChannel = supabase
+    .channel('product-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'products'
+      },
+      (payload) => {
+        const newProduct = payload.new as Product;
+        store.addProduct(newProduct);
+      }
+    )
+    .subscribe();
+
+  // Subscribe to notifications
+  const notificationChannel = supabase
+    .channel('notification-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'notifications'
+      },
+      (payload) => {
+        store.addNotification(payload.new as Notification);
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(productChannel);
+    supabase.removeChannel(notificationChannel);
+  };
 };

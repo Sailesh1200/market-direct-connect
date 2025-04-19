@@ -1,9 +1,9 @@
-
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { Product, UserRole, ProductCategory } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { useDataStore, Notification } from '@/services/DataSyncService';
 
 interface AuthContextType {
   user: User | null;
@@ -18,7 +18,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// This helper function ensures the category is one of the valid ProductCategory types
 const validateCategory = (category: string): ProductCategory => {
   const validCategories: ProductCategory[] = [
     'vegetables', 'fruits', 'grains', 'dairy', 'meat', 'poultry', 'herbs', 'other'
@@ -33,7 +32,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
+  const { products, setProducts } = useDataStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -43,14 +42,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          // Defer profile fetching
+          // Defer profile and data fetching
           setTimeout(() => {
             fetchProfile(session.user.id);
             fetchProducts();
+            fetchNotifications();
           }, 0);
         } else {
           setProfile(null);
           setProducts([]);
+          useDataStore.getState().clearNotifications();
         }
       }
     );
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (session?.user) {
         fetchProfile(session.user.id);
         fetchProducts();
+        fetchNotifications();
       }
     });
 
@@ -94,12 +96,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) throw error;
       
-      // Transform Supabase products to match our app's Product type
       const transformedProducts: Product[] = data.map(item => ({
         id: item.id,
         name: item.name,
         description: item.description || '',
-        category: validateCategory(item.category), // Use our helper function here
+        category: validateCategory(item.category),
         price: Number(item.price),
         unit: item.unit,
         quantity: Number(item.quantity),
@@ -115,6 +116,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProducts(transformedProducts);
     } catch (error) {
       console.error('Error fetching products:', error);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const { data: notifications, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      useDataStore.getState().clearNotifications();
+      notifications.forEach(notification => {
+        useDataStore.getState().addNotification(notification);
+      });
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
     }
   };
 
@@ -205,7 +224,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const supabaseProduct = {
         name: productData.name,
         description: productData.description,
-        category: productData.category, // This is already a valid ProductCategory
+        category: productData.category,
         price: productData.price,
         unit: productData.unit,
         quantity: productData.quantity,
@@ -228,7 +247,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: data.id,
         name: data.name,
         description: data.description || '',
-        category: validateCategory(data.category), // Use our helper function here
+        category: validateCategory(data.category),
         price: Number(data.price),
         unit: data.unit,
         quantity: Number(data.quantity),
@@ -241,7 +260,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updatedAt: data.updated_at
       };
 
-      // Optimistically update local state
       setProducts(prev => [newProduct, ...prev]);
 
       toast({
