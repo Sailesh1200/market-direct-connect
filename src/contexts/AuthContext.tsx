@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -260,7 +261,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updatedAt: data.updated_at
       };
 
-      setProducts(prev => [newProduct, ...prev]);
+      // Fix the TypeScript error by explicitly typing the products array
+      setProducts((prev: Product[]) => [newProduct, ...prev]);
 
       toast({
         title: 'Product Added',
