@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { Product, UserRole } from '@/types';
+import { Product, UserRole, ProductCategory } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
@@ -17,6 +17,17 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// This helper function ensures the category is one of the valid ProductCategory types
+const validateCategory = (category: string): ProductCategory => {
+  const validCategories: ProductCategory[] = [
+    'vegetables', 'fruits', 'grains', 'dairy', 'meat', 'poultry', 'herbs', 'other'
+  ];
+  
+  return validCategories.includes(category as ProductCategory) 
+    ? (category as ProductCategory) 
+    : 'other';
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -88,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: item.id,
         name: item.name,
         description: item.description || '',
-        category: item.category,
+        category: validateCategory(item.category), // Use our helper function here
         price: Number(item.price),
         unit: item.unit,
         quantity: Number(item.quantity),
@@ -194,7 +205,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const supabaseProduct = {
         name: productData.name,
         description: productData.description,
-        category: productData.category,
+        category: productData.category, // This is already a valid ProductCategory
         price: productData.price,
         unit: productData.unit,
         quantity: productData.quantity,
@@ -217,7 +228,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         id: data.id,
         name: data.name,
         description: data.description || '',
-        category: data.category,
+        category: validateCategory(data.category), // Use our helper function here
         price: Number(data.price),
         unit: data.unit,
         quantity: Number(data.quantity),
