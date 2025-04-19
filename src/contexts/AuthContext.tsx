@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { Product } from '@/types';
+import { Product, UserRole } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthContextType {
@@ -10,8 +10,8 @@ interface AuthContextType {
   session: Session | null;
   profile: any | null;
   products: Product[];
+  signUp: (email: string, password: string, role: UserRole) => Promise<any>;
   signIn: (email: string, password: string) => Promise<any>;
-  signUp: (email: string, password: string, role: 'farmer' | 'buyer') => Promise<any>;
   signOut: () => Promise<void>;
   addProduct: (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Product | null>;
 }
@@ -27,18 +27,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        // Use setTimeout to prevent deadlock
-        setTimeout(() => {
-          fetchProfile(session.user.id);
-        }, 0);
-      } else {
-        setProfile(null);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          // Defer profile fetching
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+            fetchProducts();
+          }, 0);
+        } else {
+          setProfile(null);
+          setProducts([]);
+        }
       }
-    });
+    );
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -46,30 +50,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
+        fetchProducts();
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    // Fetch products initially
-    fetchProducts();
-
-    // Set up real-time subscription to products table
-    const channel = supabase
-      .channel('public:products')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'products' }, 
-        (payload) => {
-          console.log('Real-time product update:', payload);
-          fetchProducts(); // Refetch all products on any change
-        }
-      )
-      .subscribe();
-
     return () => {
-      supabase.removeChannel(channel);
+      subscription.unsubscribe();
     };
   }, []);
 
@@ -81,11 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq('id', userId)
         .single();
       
-      if (error) {
-        console.error('Error fetching profile:', error);
-        return;
-      }
-      
+      if (error) throw error;
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -99,17 +81,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (error) {
-        console.error('Error fetching products:', error);
-        return;
-      }
+      if (error) throw error;
       
       // Transform Supabase products to match our app's Product type
       const transformedProducts: Product[] = data.map(item => ({
         id: item.id,
         name: item.name,
         description: item.description || '',
-        category: item.category as any,
+        category: item.category,
         price: Number(item.price),
         unit: item.unit,
         quantity: Number(item.quantity),
@@ -128,31 +107,77 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (error) throw error;
-    return data;
+  const signUp = async (email: string, password: string, role: UserRole) => {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role,
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Registration Successful',
+        description: 'Your account has been created.',
+      });
+
+      return data;
+    } catch (error: any) {
+      toast({
+        title: 'Registration Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+      throw error;
+    }
   };
 
-  const signUp = async (email: string, password: string, role: 'farmer' | 'buyer') => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role,
-        },
-      },
-    });
-    if (error) throw error;
-    return data;
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Login Successful',
+        description: 'Welcome back!',
+      });
+
+      return data;
+    } catch (error: any) {
+      toast({
+        title: 'Login Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+      throw error;
+    }
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+
+      toast({
+        title: 'Logged Out',
+        description: 'You have been successfully logged out.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Logout Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
   };
 
   const addProduct = async (productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
@@ -166,7 +191,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Transform product data to match Supabase schema
       const supabaseProduct = {
         name: productData.name,
         description: productData.description,
@@ -174,7 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         price: productData.price,
         unit: productData.unit,
         quantity: productData.quantity,
-        images: productData.images,
+        images: productData.images || ['/placeholder.svg'],
         farmer_id: user.id,
         farmer_name: profile.name || user.email?.split('@')[0] || 'Unknown Farmer',
         location: productData.location,
@@ -187,22 +211,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select()
         .single();
 
-      if (error) {
-        console.error('Error adding product:', error);
-        toast({
-          title: 'Failed to add product',
-          description: error.message,
-          variant: 'destructive'
-        });
-        return null;
-      }
+      if (error) throw error;
 
-      // Transform the returned data to match our Product type
       const newProduct: Product = {
         id: data.id,
         name: data.name,
         description: data.description || '',
-        category: data.category as any,
+        category: data.category,
         price: Number(data.price),
         unit: data.unit,
         quantity: Number(data.quantity),
@@ -215,6 +230,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updatedAt: data.updated_at
       };
 
+      // Optimistically update local state
+      setProducts(prev => [newProduct, ...prev]);
+
       toast({
         title: 'Product Added',
         description: 'Your product has been successfully listed',
@@ -222,7 +240,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return newProduct;
     } catch (error: any) {
-      console.error('Error adding product:', error);
       toast({
         title: 'Failed to add product',
         description: error.message || 'An unexpected error occurred',
@@ -238,8 +255,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       session, 
       profile, 
       products,
-      signIn, 
       signUp, 
+      signIn, 
       signOut,
       addProduct
     }}>
