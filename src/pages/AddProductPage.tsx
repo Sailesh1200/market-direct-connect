@@ -6,8 +6,13 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { User } from "@/types";
 
-const AddProductPage = () => {
+interface AddProductPageProps {
+  user?: User; // Make user optional to avoid breaking existing usages
+}
+
+const AddProductPage = ({ user }: AddProductPageProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
 

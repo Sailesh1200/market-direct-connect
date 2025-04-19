@@ -12,8 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import SimpleProductForm from "@/components/farmer/SimpleProductForm";
+import { User } from "@/types";
 
-const AddProductSection = () => {
+interface AddProductSectionProps {
+  user?: User; // Make user optional to avoid breaking existing usages
+}
+
+const AddProductSection = ({ user }: AddProductSectionProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
