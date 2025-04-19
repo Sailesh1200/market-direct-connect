@@ -1,6 +1,5 @@
 
 import React from "react";
-import { User } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SimpleProductForm from "@/components/farmer/SimpleProductForm";
 import { ArrowLeft } from "lucide-react";
@@ -8,11 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
-interface AddProductPageProps {
-  user: User;
-}
-
-const AddProductPage = ({ user }: AddProductPageProps) => {
+const AddProductPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -40,11 +35,7 @@ const AddProductPage = ({ user }: AddProductPageProps) => {
           <CardTitle className="text-farm-green-700">Add New Product</CardTitle>
         </CardHeader>
         <CardContent>
-          <SimpleProductForm 
-            farmerId={user.id}
-            farmerName={user.name}
-            onSuccess={handleSuccess}
-          />
+          <SimpleProductForm onSuccess={handleSuccess} />
         </CardContent>
       </Card>
     </div>

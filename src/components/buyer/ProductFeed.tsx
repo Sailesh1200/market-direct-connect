@@ -1,30 +1,21 @@
 
 import { useEffect, useState } from "react";
 import ProductFeedItem from "./ProductFeedItem";
-import { Product } from "@/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDataStore } from "@/services/DataSyncService";
 import { Clock, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ProductFeed = () => {
-  const { products } = useDataStore();
-  const [sortedProducts, setSortedProducts] = useState<Product[]>([]);
-  
-  useEffect(() => {
-    // Sort products by creation date (newest first)
-    const sorted = [...products].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    setSortedProducts(sorted);
-  }, [products]);
+  const { products } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const handleRefresh = () => {
-    // Sort products by creation date (newest first)
-    const sorted = [...products].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    setSortedProducts(sorted);
+    setIsRefreshing(true);
+    // Simulating refresh - the actual data refresh is handled by the Supabase real-time subscription
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1000);
   };
   
   return (
@@ -39,15 +30,16 @@ const ProductFeed = () => {
           size="sm"
           className="text-farm-brown-600"
           onClick={handleRefresh}
+          disabled={isRefreshing}
         >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
+          <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+          {isRefreshing ? 'Refreshing...' : 'Refresh'}
         </Button>
       </CardHeader>
       <CardContent className="p-4">
-        {sortedProducts.length > 0 ? (
+        {products.length > 0 ? (
           <div className="space-y-4">
-            {sortedProducts.map((product) => (
+            {products.map((product) => (
               <ProductFeedItem key={product.id} product={product} />
             ))}
           </div>

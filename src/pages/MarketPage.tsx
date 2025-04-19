@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,16 +13,25 @@ import ProductCard from "@/components/market/ProductCard";
 import PriceCard from "@/components/market/PriceCard";
 import ProductFiltersComponent, { ProductFilters as ProductFiltersType } from "@/components/market/ProductFilters";
 import { Product, MarketPrice } from "@/types";
-import { products, marketPrices } from "@/data/mockData";
+import { marketPrices } from "@/data/mockData";
 import { ListFilter, Grid3X3, AlignJustify, Map, Shield, BarChart2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MarketPage = () => {
   const navigate = useNavigate();
-  const [displayedProducts, setDisplayedProducts] = useState<Product[]>(products);
+  const { products } = useAuth();
+  const [displayedProducts, setDisplayedProducts] = useState<Product[]>([]);
   const [sortOption, setSortOption] = useState<string>("latest");
   const [showFilters, setShowFilters] = useState(false);
   const [gridView, setGridView] = useState<"grid" | "list">("grid");
   const [activeTab, setActiveTab] = useState<string>("products");
+  
+  // Update displayed products when products from AuthContext changes
+  useEffect(() => {
+    setDisplayedProducts(products);
+    // Apply current sort
+    handleSort(sortOption);
+  }, [products]);
   
   const handleApplyFilters = (filters: ProductFiltersType) => {
     let filtered = [...products];

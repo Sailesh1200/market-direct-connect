@@ -9,5 +9,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   auth: {
     persistSession: true,
     autoRefreshToken: true,
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10
+    }
   }
 });

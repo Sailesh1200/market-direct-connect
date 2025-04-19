@@ -16,8 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Product, ProductCategory } from "@/types";
-import { useDataStore } from "@/services/DataSyncService";
+import { ProductCategory } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
 
 const productFormSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters"),
@@ -33,14 +33,12 @@ const productFormSchema = z.object({
 type ProductFormValues = z.infer<typeof productFormSchema>;
 
 interface SimpleProductFormProps {
-  farmerId: string;
-  farmerName: string;
   onSuccess?: () => void;
 }
 
-const SimpleProductForm = ({ farmerId, farmerName, onSuccess }: SimpleProductFormProps) => {
+const SimpleProductForm = ({ onSuccess }: SimpleProductFormProps) => {
   const { toast } = useToast();
-  const { addProduct } = useDataStore();
+  const { addProduct, user, profile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const defaultValues: Partial<ProductFormValues> = {
@@ -59,46 +57,55 @@ const SimpleProductForm = ({ farmerId, farmerName, onSuccess }: SimpleProductFor
     defaultValues,
   });
 
-  const onSubmit = (data: ProductFormValues) => {
+  const onSubmit = async (data: ProductFormValues) => {
+    if (!user || !profile) {
+      toast({
+        title: "Authentication Required",
+        description: "You must be logged in to add products.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    // Create new product with current timestamp
-    const newProduct: Product = {
-      id: Date.now().toString(),
-      name: data.name,
-      description: data.description || `Fresh ${data.name} available now`,
-      category: (data.category as ProductCategory) || "vegetables",
-      price: data.price,
-      unit: data.unit || "kg",
-      quantity: data.quantity,
-      images: ["/placeholder.svg"],
-      farmerId,
-      farmerName,
-      location: data.location,
-      organic: data.organic,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    
-    // Add a small delay to simulate server processing
-    setTimeout(() => {
-      addProduct(newProduct);
+    try {
+      // Prepare product data
+      const productData = {
+        name: data.name,
+        description: data.description || `Fresh ${data.name} available now`,
+        category: (data.category as ProductCategory) || "vegetables",
+        price: data.price,
+        unit: data.unit || "kg",
+        quantity: data.quantity,
+        images: ["/placeholder.svg"],
+        farmerId: user.id,
+        farmerName: profile.name || user.email?.split('@')[0] || 'Unknown Farmer',
+        location: data.location,
+        organic: data.organic,
+      };
       
-      toast({
-        title: "Product Added",
-        description: "Your product has been successfully added to the marketplace.",
-      });
+      // Add product using the AuthContext function
+      const result = await addProduct(productData);
       
-      // Reset form
-      form.reset(defaultValues);
-      
-      // Call onSuccess callback if provided
-      if (onSuccess) {
-        onSuccess();
+      if (result) {
+        // Reset form
+        form.reset(defaultValues);
+        
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess();
+        }
       }
-      
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add product",
+        variant: "destructive"
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 500);
+    }
   };
 
   return (

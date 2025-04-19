@@ -12,13 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import SimpleProductForm from "@/components/farmer/SimpleProductForm";
-import { User } from "@/types";
 
-interface AddProductSectionProps {
-  user: User;
-}
-
-const AddProductSection = ({ user }: AddProductSectionProps) => {
+const AddProductSection = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
@@ -45,11 +40,7 @@ const AddProductSection = ({ user }: AddProductSectionProps) => {
                 Fill out the basic details to list your product.
               </DialogDescription>
             </DialogHeader>
-            <SimpleProductForm 
-              farmerId={user.id} 
-              farmerName={user.name}
-              onSuccess={() => setIsDialogOpen(false)}
-            />
+            <SimpleProductForm onSuccess={() => setIsDialogOpen(false)} />
           </DialogContent>
         </Dialog>
       </CardContent>

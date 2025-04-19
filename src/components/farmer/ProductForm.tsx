@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { useDataStore } from "@/services/DataSyncService";
+import { useAuth } from "@/contexts/AuthContext";
 import { ProductCategory } from "@/types";
 
 // Define the schema for product form validation
@@ -62,15 +61,13 @@ const productFormSchema = z.object({
 });
 
 interface ProductFormProps {
-  farmerId: string;
-  farmerName: string;
   onSuccess?: () => void;
 }
 
-const ProductForm = ({ farmerId, farmerName, onSuccess }: ProductFormProps) => {
+const ProductForm = ({ onSuccess }: ProductFormProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { addProduct } = useDataStore();
+  const { addProduct, user, profile } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize form with default values
@@ -89,47 +86,64 @@ const ProductForm = ({ farmerId, farmerName, onSuccess }: ProductFormProps) => {
   });
 
   // Handle form submission
-  const onSubmit = (values: z.infer<typeof productFormSchema>) => {
+  const onSubmit = async (values: z.infer<typeof productFormSchema>) => {
+    if (!user || !profile) {
+      toast({
+        title: "Authentication Required",
+        description: "You must be logged in to add products.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
-    // Create new product object with all required fields
-    const newProduct = {
-      id: Date.now().toString(),
-      name: values.name,
-      description: values.description,
-      category: values.category,
-      price: values.price,
-      unit: values.unit,
-      quantity: values.quantity,
-      organic: values.organic,
-      location: values.location,
-      images: ["/placeholder.svg"],
-      farmerId,
-      farmerName,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    
-    // Simulate API call with timeout
-    setTimeout(() => {
-      // Add product to the data store
-      addProduct(newProduct);
+    try {
+      // Prepare product data
+      const productData = {
+        name: values.name,
+        description: values.description,
+        category: values.category as ProductCategory,
+        price: values.price,
+        unit: values.unit,
+        quantity: values.quantity,
+        images: ["/placeholder.svg"],
+        farmerId: user.id,
+        farmerName: profile.name || user.email?.split('@')[0] || 'Unknown Farmer',
+        location: values.location,
+        organic: values.organic,
+      };
       
-      // Show success toast
-      toast({
-        title: "Product Listed Successfully",
-        description: "Your product has been listed on the marketplace.",
-      });
+      // Add product using the AuthContext function
+      const result = await addProduct(productData);
       
-      // Reset form
-      form.reset();
-      setIsSubmitting(false);
-      
-      // Call onSuccess callback if provided
-      if (onSuccess) {
-        onSuccess();
+      if (result) {
+        // Show success toast
+        toast({
+          title: "Product Listed Successfully",
+          description: "Your product has been listed on the marketplace.",
+        });
+        
+        // Reset form
+        form.reset();
+        
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess();
+        } else {
+          // Navigate back to dashboard
+          navigate('/dashboard');
+        }
       }
-    }, 1000);
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add product",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
