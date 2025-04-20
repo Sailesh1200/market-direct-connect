@@ -2,9 +2,11 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { Product, UserRole, ProductCategory } from '@/types';
+import { UserRole } from '@/types';
 import { useToast } from '@/hooks/use-toast';
-import { useDataStore, Notification } from '@/services/DataSyncService';
+import { useDataStore } from '@/services/DataSyncService';
+import { useProducts } from '@/hooks/useProducts';
+import { fetchProfile, fetchProducts, fetchNotifications } from '@/services/AuthService';
 
 interface AuthContextType {
   user: User | null;
@@ -19,21 +21,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const validateCategory = (category: string): ProductCategory => {
-  const validCategories: ProductCategory[] = [
-    'vegetables', 'fruits', 'grains', 'dairy', 'meat', 'poultry', 'herbs', 'other'
-  ];
-  
-  return validCategories.includes(category as ProductCategory) 
-    ? (category as ProductCategory) 
-    : 'other';
-};
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<any | null>(null);
-  const { products, setProducts } = useDataStore();
+  const { products, setProducts, addProduct: addNewProduct } = useProducts();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -45,14 +37,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (session?.user) {
           // Defer profile and data fetching
           setTimeout(() => {
-            fetchProfile(session.user.id);
-            fetchProducts();
-            fetchNotifications();
+            handleUserData(session.user.id);
           }, 0);
         } else {
-          setProfile(null);
-          setProducts([]);
-          useDataStore.getState().clearNotifications();
+          clearUserData();
         }
       }
     );
@@ -62,9 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
-        fetchProducts();
-        fetchNotifications();
+        handleUserData(session.user.id);
       }
     });
 
@@ -73,69 +59,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const fetchProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-      
-      if (error) throw error;
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching profile:', error);
-    }
-  };
-
-  const fetchProducts = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
-      const transformedProducts: Product[] = data.map(item => ({
-        id: item.id,
-        name: item.name,
-        description: item.description || '',
-        category: validateCategory(item.category),
-        price: Number(item.price),
-        unit: item.unit,
-        quantity: Number(item.quantity),
-        images: item.images || ['/placeholder.svg'],
-        farmerId: item.farmer_id,
-        farmerName: item.farmer_name,
-        location: item.location || '',
-        organic: item.organic || false,
-        createdAt: item.created_at,
-        updatedAt: item.updated_at
-      }));
-      
-      setProducts(transformedProducts);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-    }
-  };
-
-  const fetchNotifications = async () => {
-    try {
-      const { data: notifications, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      
+  const handleUserData = async (userId: string) => {
+    const userProfile = await fetchProfile(userId);
+    setProfile(userProfile);
+    
+    const productsData = await fetchProducts();
+    setProducts(productsData);
+    
+    const notifications = await fetchNotifications();
+    if (notifications.length > 0) {
       useDataStore.getState().clearNotifications();
       notifications.forEach(notification => {
         useDataStore.getState().addNotification(notification);
       });
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
     }
+  };
+
+  const clearUserData = () => {
+    setProfile(null);
+    setProducts([]);
+    useDataStore.getState().clearNotifications();
   };
 
   const signUp = async (email: string, password: string, role: UserRole) => {
@@ -144,9 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email,
         password,
         options: {
-          data: {
-            role,
-          },
+          data: { role },
         },
       });
 
@@ -211,74 +152,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const addProduct = async (productData: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (!user || !profile) {
-      toast({
-        title: 'Authentication required',
-        description: 'You must be logged in to add products',
-        variant: 'destructive'
-      });
-      return null;
-    }
-
-    try {
-      const supabaseProduct = {
-        name: productData.name,
-        description: productData.description,
-        category: productData.category,
-        price: productData.price,
-        unit: productData.unit,
-        quantity: productData.quantity,
-        images: productData.images || ['/placeholder.svg'],
-        farmer_id: user.id,
-        farmer_name: profile.name || user.email?.split('@')[0] || 'Unknown Farmer',
-        location: productData.location,
-        organic: productData.organic
-      };
-
-      const { data, error } = await supabase
-        .from('products')
-        .insert(supabaseProduct)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      const newProduct: Product = {
-        id: data.id,
-        name: data.name,
-        description: data.description || '',
-        category: validateCategory(data.category),
-        price: Number(data.price),
-        unit: data.unit,
-        quantity: Number(data.quantity),
-        images: data.images || ['/placeholder.svg'],
-        farmerId: data.farmer_id,
-        farmerName: data.farmer_name,
-        location: data.location || '',
-        organic: data.organic || false,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
-      };
-
-      // Fix: Instead of using a function to update the state, directly add the new product to the current products array
-      const updatedProducts = [newProduct, ...products];
-      setProducts(updatedProducts);
-
-      toast({
-        title: 'Product Added',
-        description: 'Your product has been successfully listed',
-      });
-
-      return newProduct;
-    } catch (error: any) {
-      toast({
-        title: 'Failed to add product',
-        description: error.message || 'An unexpected error occurred',
-        variant: 'destructive'
-      });
-      return null;
-    }
+  const addProduct = (product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>) => {
+    return addNewProduct(product, user?.id || '', profile);
   };
 
   return (
