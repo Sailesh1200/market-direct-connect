@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -121,6 +120,14 @@ const App = () => {
                       element={
                         <ProtectedRoute>
                           <AddProductPage user={user as User} />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/profile" 
+                      element={
+                        <ProtectedRoute>
+                          <ProfilePage />
                         </ProtectedRoute>
                       } 
                     />
