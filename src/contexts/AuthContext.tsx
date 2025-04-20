@@ -2,7 +2,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { UserRole } from '@/types';
+import { UserRole, Product, ProductCategory } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 import { useDataStore } from '@/services/DataSyncService';
 import { useProducts } from '@/hooks/useProducts';
@@ -64,7 +64,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile(userProfile);
     
     const productsData = await fetchProducts();
-    setProducts(productsData);
+    
+    // Map the Supabase products to match our Product type structure
+    const mappedProducts = productsData.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description || '',
+      category: item.category as ProductCategory,
+      price: Number(item.price),
+      unit: item.unit,
+      quantity: Number(item.quantity),
+      images: item.images || ['/placeholder.svg'],
+      farmerId: item.farmer_id,
+      farmerName: item.farmer_name,
+      location: item.location || '',
+      organic: item.organic || false,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at
+    }));
+    
+    setProducts(mappedProducts);
     
     const notifications = await fetchNotifications();
     if (notifications.length > 0) {

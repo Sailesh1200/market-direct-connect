@@ -68,8 +68,8 @@ export const useProducts = () => {
         updatedAt: data.updated_at
       };
 
-      const updatedProducts = [newProduct, ...products];
-      setProducts(updatedProducts);
+      // Update products array with the new product at the beginning
+      setProducts([newProduct, ...products]);
 
       toast({
         title: 'Product Added',
