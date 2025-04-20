@@ -261,8 +261,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         updatedAt: data.updated_at
       };
 
-      // Fix the TypeScript error by explicitly typing the products array
-      setProducts((prev: Product[]) => [newProduct, ...prev]);
+      // Fix: Instead of using a function to update the state, directly add the new product to the current products array
+      const updatedProducts = [newProduct, ...products];
+      setProducts(updatedProducts);
 
       toast({
         title: 'Product Added',
