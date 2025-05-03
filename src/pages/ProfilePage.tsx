@@ -29,7 +29,7 @@ const ProfilePage = () => {
         return;
       }
 
-      setProfile(data);
+      setProfile(data as Profile);
     };
 
     fetchProfile();
@@ -52,7 +52,7 @@ const ProfilePage = () => {
           </div>
           <div>
             <h3 className="font-medium">Date of Birth</h3>
-            <p>{profile.dateOfBirth || 'Not provided'}</p>
+            <p>{profile.date_of_birth || 'Not provided'}</p>
           </div>
           <div>
             <h3 className="font-medium">State</h3>
@@ -64,7 +64,7 @@ const ProfilePage = () => {
           </div>
           <div>
             <h3 className="font-medium">Mobile Number</h3>
-            <p>{profile.mobileNumber || 'Not provided'}</p>
+            <p>{profile.mobile_number || 'Not provided'}</p>
           </div>
           <div>
             <h3 className="font-medium">Gender</h3>

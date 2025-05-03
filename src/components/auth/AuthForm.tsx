@@ -10,8 +10,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ProfileFormData } from "@/types/profile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { User } from "@/types";
 
-const AuthForm = ({ mode }: { mode: "login" | "register" }) => {
+interface AuthFormProps {
+  mode: "login" | "register";
+  onSuccess?: (userData: User) => void;
+}
+
+const AuthForm = ({ mode, onSuccess }: AuthFormProps) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signIn, signUp } = useAuth();
@@ -59,10 +65,29 @@ const AuthForm = ({ mode }: { mode: "login" | "register" }) => {
           description: "Please verify your email to continue",
         });
 
+        if (onSuccess && data.user) {
+          onSuccess({
+            id: data.user.id,
+            email: data.user.email || '',
+            name: data.user.user_metadata?.name || '',
+            role: data.user.user_metadata?.role || 'buyer'
+          } as User);
+        }
+        
         navigate("/login");
       } else {
-        const { error } = await signIn(formData.email, formData.password);
+        const { data, error } = await signIn(formData.email, formData.password);
         if (error) throw error;
+        
+        if (onSuccess && data.user) {
+          onSuccess({
+            id: data.user.id,
+            email: data.user.email || '',
+            name: data.user.user_metadata?.name || '',
+            role: data.user.user_metadata?.role || 'buyer'
+          } as User);
+        }
+        
         navigate("/dashboard");
       }
     } catch (error: any) {

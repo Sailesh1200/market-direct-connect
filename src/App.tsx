@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -14,6 +15,7 @@ import RegisterPage from "@/pages/RegisterPage";
 import DashboardPage from "@/pages/dashboard/DashboardPage";
 import AdminDashboard from "@/pages/dashboard/AdminDashboard";
 import AddProductPage from "@/pages/AddProductPage";
+import ProfilePage from "@/pages/ProfilePage"; 
 import NotFound from "@/pages/NotFound";
 import { User, UserRole } from "@/types";
 import { LanguageProvider } from "@/contexts/LanguageContext";

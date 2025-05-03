@@ -12,12 +12,12 @@ export interface ProfileFormData {
 
 export interface Profile {
   id: string;
-  dateOfBirth: string | null;
+  date_of_birth: string | null;
   state: string | null;
   district: string | null;
-  mobileNumber: string | null;
+  mobile_number: string | null;
   gender: string | null;
   occupation: string | null;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 }
